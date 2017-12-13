@@ -1,16 +1,12 @@
 from __future__ import (absolute_import, division, print_function)
 
-import os
-import pytest
 from distutils.version import LooseVersion as version
 from scipy.fftpack import fft, fftfreq
 from scipy.special import gamma
 from scipy import constants
 import numpy as np
-from numpy.testing import assert_allclose
 import lmfit
 from lmfit.models import (Model, index_of)
-from lmfit.lineshapes import gaussian, lorentzian
 
 planck_constant = constants.Planck / constants.e * 1E15  # meV*psec
 
@@ -98,7 +94,7 @@ class StretchedExponentialFTModel(Model):
     Fitting parameters:
         - integrated intensity ``amplitude`` :math:`A`
         - position of the peak ``center`` :math:`E_0`
-        - nominal relaxation time ``tau``` :math:`\tau` in picoseconds
+        - nominal relaxation time ``tau``` :math:`\tau`
         - stretching exponent ``beta`` :math:`\beta`
 
     If the time unit is picoseconds, then the reciprocal energy unit is mili-eV
@@ -148,33 +144,3 @@ class StretchedExponentialFTModel(Model):
                                 center=center,
                                 tau=tau,
                                 beta=beta)
-
-
-# Test that FT{Gaussian} = Gaussian, and FT{exponential} = Lorentzian
-x = np.arange(-0.1, 0.5, 0.0004)  # energy domain, in meV
-# items are (tau, beta, intensities). Assumed that tau unit is picoseconds
-trios = [(20.0, 2.0,
-          gaussian(x, amplitude=1.0, center=0.0,
-                   sigma=planck_constant/(np.sqrt(2.0)*20.0*np.pi))),
-         (100.0, 1.0,
-          # sigma below is actually the HWHM
-          lorentzian(x, amplitude=1.0, center=0.0,
-                     sigma=planck_constant / (2 * np.pi * 100.0)))
-         ]
-
-@pytest.mark.parametrize('tau, beta, y', trios)
-def test_lineshapes(tau, beta, y):
-    model = StretchedExponentialFTModel()
-    params = model.guess(y, x=None)
-    # Stray away from optimal parameters
-    [params[name].set(value=val) for name, val in
-     dict(amplitude=3.0, center=0.0002, tau=50.0, beta=1.5).items()]
-    r = model.fit(y, params, x=x)
-    all_params = 'tau beta amplitude center'.split()
-    assert_allclose([tau, beta, 1.0, 0.0],
-                    [r.params[p].value for p in all_params],
-                    rtol=0.1, atol=0.000001)
-
-
-if __name__ == '__main__':
-    pytest.main([os.path.abspath(__file__)])
