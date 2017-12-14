@@ -27,7 +27,13 @@ install:
 
 script:
   - py.test --cov=qef qef tests
-  - if [[ "${TRAVIS_PYTHON_VERSION}" == "3.6" ]]; then flake8; fi
+  - if [[ "${TRAVIS_PYTHON_VERSION}" == "3.6" ]]; then
+        flake8;
+    fi
 
 after_success:
   - codecov
+
+notifications:
+  - on_success: never
+  - on_failure: never

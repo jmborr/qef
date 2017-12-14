@@ -10,6 +10,7 @@ from lmfit.models import (Model, index_of)
 
 planck_constant = constants.Planck / constants.e * 1E15  # meV*psec
 
+
 def strexpft(x, amplitude=1.0, center=0.0, tau=10.0, beta=1.0):
     r"""Fourier transform of the symmetrized stretched exponential
 
@@ -138,7 +139,7 @@ class StretchedExponentialFTModel(Model):
             # Assumptions:
             #   1. large dynamic range, function decays fast in domain x
             #   2. x-values are equispaced
-            amplitude = sum(y)* (max(x)-min(x))/len(x)
+            amplitude = sum(y) * (max(x)-min(x))/len(x)
             tau = max(y) / amplitude  # assumed beta==1.0
         return self.make_params(amplitude=amplitude,
                                 center=center,
