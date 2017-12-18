@@ -1,29 +1,39 @@
-# Config file for automatic testing at travis-ci.org
-# This file will be regenerated if you run travis_pypi_setup.py
-
 language: python
+
 python:
-  - 3.5
-  - 3.4
-  - 3.3
-  - 2.7
-  - 2.6
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.6"
 
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: pip install -U tox-travis
+before_install:
+  - if [[ "${TRAVIS_PYTHON_VERSION}" == "2.7" ]]; then
+        wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+        wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    fi
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH="$HOME/miniconda/bin:$PATH"
+  - hash -r
+  - conda config --set always_yes yes --set changeps1 no
 
-# command to run tests, e.g. python setup.py test
-script: tox
+install:
+  - conda create -q -n testenv python=$TRAVIS_PYTHON_VERSION pytest-cov
+  - if [[ "${TRAVIS_PYTHON_VERSION}" == "3.6" ]]; then
+        conda install --yes -n testenv flake8;
+    fi
+  - source activate testenv
+  - pip install codecov lmfit
 
-# After you create the Github repo and add it to Travis, run the
-# travis_pypi_setup.py script to finish PyPI deployment setup
-deploy:
-  provider: pypi
-  distributions: sdist bdist_wheel
-  user: jmborr
-  password:
-    secure: PLEASE_REPLACE_ME
-  on:
-    tags: true
-    repo: jmborr/qef
-    python: 2.7
+script:
+  - py.test --cov=qef qef tests
+  - if [[ "${TRAVIS_PYTHON_VERSION}" == "3.6" ]]; then
+        flake8;
+    fi
+
+after_success:
+  - codecov
+
+notifications:
+  - on_success: never
+  - on_failure: never

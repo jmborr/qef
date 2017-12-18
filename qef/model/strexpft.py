@@ -10,6 +10,7 @@ from lmfit.models import (Model, index_of)
 
 planck_constant = constants.Planck / constants.e * 1E15  # meV*psec
 
+
 def strexpft(x, amplitude=1.0, center=0.0, tau=10.0, beta=1.0):
     r"""Fourier transform of the symmetrized stretched exponential
 
@@ -45,7 +46,7 @@ def strexpft(x, amplitude=1.0, center=0.0, tau=10.0, beta=1.0):
     -------
     values: sequence of floats
         function over the domain
-    """
+    """  # noqa: E501
     ne = len(x)
     # energy spacing. Assumed x is a grid of increasing energy values
     refine_factor = 16  # for better calculation of the fourier transform
@@ -98,8 +99,7 @@ class StretchedExponentialFTModel(Model):
         - stretching exponent ``beta`` :math:`\beta`
 
     If the time unit is picoseconds, then the reciprocal energy unit is mili-eV
-    """
-
+    """  # noqa: E501
     def __init__(self, independent_vars=['x'], prefix='', missing=None,
                  name=None,  **kwargs):
         kwargs.update({'prefix': prefix, 'missing': missing,
@@ -138,7 +138,7 @@ class StretchedExponentialFTModel(Model):
             # Assumptions:
             #   1. large dynamic range, function decays fast in domain x
             #   2. x-values are equispaced
-            amplitude = sum(y)* (max(x)-min(x))/len(x)
+            amplitude = sum(y) * (max(x)-min(x))/len(x)
             tau = max(y) / amplitude  # assumed beta==1.0
         return self.make_params(amplitude=amplitude,
                                 center=center,
