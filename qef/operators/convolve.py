@@ -45,9 +45,7 @@ class Convolve(CompositeModel):
         e = kwargs[independent_var]  # energy values
         neg_e = min(e) - np.flip(e[np.where(e > 0)], axis=0)
         pos_e = max(e) - np.flip(e[np.where(e < 0)], axis=0)
-        i_start = int(len(e)/2) - len(neg_e)
-        i_end = i_start + len(e)
         e = np.concatenate((neg_e, e, pos_e))
         kwargs.update({independent_var: e})
         model_data = self.model.eval(params=params, **kwargs)
-        return convolve(model_data, res_data)#[i_start: i_end]
+        return convolve(model_data, res_data)

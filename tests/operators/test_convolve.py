@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import pytest
 import numpy as np
 from numpy.testing import assert_almost_equal
@@ -25,7 +26,7 @@ def test_simplecases(ComponentModel, de, sigma):
     p.update(c2.make_params(amplitude=1.0, center=0.0, sigma=s2))
     e = de * np.arange(-250, 1500)  # energies in meV
     y = Convolve(c1, c2).eval(params=p, x=e)
-    m=ComponentModel()
+    m = ComponentModel()
     params = m.guess(y, x=e)
     r = m.fit(y, params, x=e)
     assert_almost_equal(r.params['sigma'], sigma(s1, s2), decimal=3)
