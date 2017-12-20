@@ -8,7 +8,7 @@ from numpy.testing import assert_allclose
 from scipy import constants
 from lmfit.lineshapes import gaussian, lorentzian
 
-from qef.model.strexpft import StretchedExponentialFTModel
+from qef.models.strexpft import StretchedExponentialFTModel
 
 planck_constant = constants.Planck / constants.e * 1E15  # meV*psec
 
