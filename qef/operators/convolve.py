@@ -20,7 +20,7 @@ def convolve(model, resolution):
     Returns
     -------
     numpy.ndarray
-    """
+    """  # noqa: E501
     c = np.convolve(model, resolution, mode='valid')
     if len(model) % len(resolution) == 0:
         c = c[:-1]
@@ -29,6 +29,7 @@ def convolve(model, resolution):
 
 class Convolve(CompositeModel):
     r"""Convolution between model and resolution.
+
     It is assumed that the resolution FWHM is energy independent.
     Non-symmetric energy ranges are allowed (when the range of negative values
     is different than that of positive values).
@@ -49,5 +50,5 @@ class Convolve(CompositeModel):
         e = np.concatenate((neg_e, e, pos_e))
         kwargs.update({independent_var: e})
         model_data = self.model.eval(params=params, **kwargs)
-        de = (e[-1] - e[0])/(len(e) - 1 )  # energy spacing
+        de = (e[-1] - e[0])/(len(e) - 1)  # energy spacing
         return de * convolve(model_data, res_data)
