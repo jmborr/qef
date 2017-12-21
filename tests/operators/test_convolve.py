@@ -15,7 +15,7 @@ cases = ((LorentzianModel,
           lambda s1, s2: s1 + s2),
          (GaussianModel,
           0.0004,
-           lambda s1, s2: np.sqrt(s1 * s1 + s2 * s2)))
+          lambda s1, s2: np.sqrt(s1 * s1 + s2 * s2)))
 
 
 @pytest.mark.parametrize('ComponentModel, de, sigma', cases)
