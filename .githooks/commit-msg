@@ -57,7 +57,7 @@ msg_trac() {
 
 	if [ $? -ne 0 ]
 	then
-		die 'Please reference a trac ticket via "Re(fs)"'
+		die 'Begin commit message with "Refs #X" with X the GitHub issue number'
 	fi
 }
 
