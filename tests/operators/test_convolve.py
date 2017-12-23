@@ -10,8 +10,12 @@ from lmfit.models import LorentzianModel, GaussianModel
 from qef.operators.convolve import Convolve
 
 
-cases = ((LorentzianModel, 0.004, lambda s1, s2: s1 + s2),
-         (GaussianModel, 0.0004, lambda s1, s2: np.sqrt(s1 * s1 + s2 * s2)))
+cases = ((LorentzianModel,
+          0.004,
+          lambda s1, s2: s1 + s2),
+         (GaussianModel,
+          0.0004,
+          lambda s1, s2: np.sqrt(s1 * s1 + s2 * s2)))
 
 
 @pytest.mark.parametrize('ComponentModel, de, sigma', cases)
@@ -28,7 +32,10 @@ def test_simplecases(ComponentModel, de, sigma):
     y = Convolve(c1, c2).eval(params=p, x=e)
     m = ComponentModel()
     params = m.guess(y, x=e)
+    params['amplitude'].set(value=42.0)  # astray from correct value
+    params['sigma'].set(value=4.2*sigma(s1, s2))  # astray from correct value
     r = m.fit(y, params, x=e)
+    assert_almost_equal(r.params['amplitude'], 1.0, decimal=3)
     assert_almost_equal(r.params['sigma'], sigma(s1, s2), decimal=3)
 
 

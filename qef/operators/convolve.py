@@ -6,8 +6,9 @@ def convolve(model, resolution):
     r"""Convolution of resolution with model data.
 
     It is assumed that the resolution FWHM is energy independent.
+    We multiply by spacing :math:`dx` of independent variable :math:`x`.
 
-    .. math:: (model \otimes resolution)[n] = \sum_m model[m] * resolution[m-n]
+    .. math:: (model \otimes resolution)[n] = dx * \sum_m model[m] * resolution[m-n]
 
     Parameters
     ----------
@@ -19,18 +20,19 @@ def convolve(model, resolution):
     Returns
     -------
     numpy.ndarray
-    """
+    """  # noqa: E501
     c = np.convolve(model, resolution, mode='valid')
     if len(model) % len(resolution) == 0:
         c = c[:-1]
-    return c / sum(resolution)
+    return c
 
 
 class Convolve(CompositeModel):
     r"""Convolution between model and resolution.
+
     It is assumed that the resolution FWHM is energy independent.
     Non-symmetric energy ranges are allowed (when the range of negative values
-    is different than that of positive values)
+    is different than that of positive values).
     """
 
     def __init__(self, resolution, model, **kws):
@@ -48,4 +50,5 @@ class Convolve(CompositeModel):
         e = np.concatenate((neg_e, e, pos_e))
         kwargs.update({independent_var: e})
         model_data = self.model.eval(params=params, **kwargs)
-        return convolve(model_data, res_data)
+        de = (e[-1] - e[0])/(len(e) - 1)  # energy spacing
+        return de * convolve(model_data, res_data)
