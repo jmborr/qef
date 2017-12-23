@@ -90,7 +90,8 @@ print(script)  # inform of the commands to be run
 output = None  # collect output from the commands
 if not args.dryrun:
     try:
-        output = subprocess.check_output(script, shell=True, stderr=subprocess.STDOUT)
+        output = subprocess.check_output(script, shell=True,
+                                         stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as errorObject:
         output = errorObject.output
     print("OUTPUT from the commands\n"+output)
