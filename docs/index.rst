@@ -20,3 +20,5 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+`Donwload the documentation <https://readthedocs.org/projects/qef/downloads>`_
