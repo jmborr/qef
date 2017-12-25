@@ -1,0 +1,1 @@
+.. automodule:: qef.models.deltadirac

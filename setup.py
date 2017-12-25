@@ -12,7 +12,7 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    'numpy', 'scipy', 'lmfit', 'six'
+    'numpy', 'numpydoc', 'scipy', 'lmfit', 'six'
     # TODO: put package requirements here
 ]
 
