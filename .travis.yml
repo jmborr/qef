@@ -30,7 +30,7 @@ script:
   - if [[ "${TRAVIS_PYTHON_VERSION}" == "3.6" ]]; then
         flake8;
     elif [[ "${TRAVIS_PYTHON_VERSION}" == "3.6" ]]; then
-        sphinx-build -nWT -b html docs docs/_build/html
+        sphinx-build -nWT -b html docs docs/_build/html;
     fi
 
 
