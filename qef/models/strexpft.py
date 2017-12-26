@@ -126,7 +126,7 @@ class StretchedExponentialFTModel(Model):
 
         Returns
         -------
-        Parameters
+        :class:`~lmfit.parameter.Parameters`
             parameters with guessed values
         """
         amplitude = 1.0
