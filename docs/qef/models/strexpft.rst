@@ -1,6 +1,6 @@
-====================================================
-Fourier transform of the stretched exponential model
-====================================================
+============================================================================
+StretchedExponentialFTModel : Fourier transform of the stretched exponential
+============================================================================
 
 .. automodule:: qef.models.strexpft
     :members:

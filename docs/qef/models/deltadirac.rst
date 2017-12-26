@@ -1,6 +1,6 @@
-=================
-Delta Dirac model
-=================
+===============
+DeltaDiracModel
+===============
 
 .. automodule:: qef.models.deltadirac
     :members:
