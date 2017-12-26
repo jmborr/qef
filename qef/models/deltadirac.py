@@ -23,8 +23,8 @@ def delta_dirac(x, amplitude=1.0, center=0.0):
 
     Returns
     -------
-    values: sequence of floats
-        function over the domain
+    values: :class:`~numpy:numpy.ndarray`
+        function values over the domain
     """
     dx = (x[-1] - x[0]) / (len(x) - 1)  # domain spacing
     y = np.zeros(len(x))
@@ -66,7 +66,7 @@ class DeltaDiracModel(Model):
 
         Returns
         -------
-        Parameters
+        :class:`~lmfit.parameter.Parameters`
             parameters with guessed values
         """
         amplitude = max(y)

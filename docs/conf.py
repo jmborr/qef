@@ -287,8 +287,10 @@ texinfo_documents = [
 # If true, do not generate a @detailmenu in the "Top" node's menu.
 #texinfo_no_detailmenu = False
 
+# Domains for intersphinx inventory file objects.inv
 intersphinx_mapping = {
     "python": ('https://docs.python.org/', None),
     "numpy": ('http://docs.scipy.org/doc/numpy', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
     "lmfit": ('https://lmfit.github.io/lmfit-py', None)
 }

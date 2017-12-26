@@ -21,11 +21,11 @@ def strexpft(x, amplitude=1.0, center=0.0, tau=10.0, beta=1.0):
     Normalization and maximum at :math:`E=E_0`:
 
     .. math::
-
         \int_{-\infty}^{\infty} dE S(E) = A
+    .. math::
         max(S) = A \frac{\tau}{\beta} \Gamma(\beta^{-1})
 
-    Uses scipy.fftpack.fft for the Fourier transform
+    Uses :func:`~scipy:scipy.fftpack.fft` for the Fourier transform
 
     Parameters
     ----------
