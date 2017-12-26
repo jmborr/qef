@@ -29,7 +29,8 @@ script:
   - py.test --cov=qef qef tests
   - if [[ "${TRAVIS_PYTHON_VERSION}" == "3.6" ]]; then
         flake8;
-    elif [[ "${TRAVIS_PYTHON_VERSION}" == "3.6" ]]; then
+    fi
+  - if [[ "${TRAVIS_PYTHON_VERSION}" == "2.7" ]]; then
         sphinx-build -nWT -b html docs docs/_build/html;
     fi
 
