@@ -14,7 +14,7 @@ def delta_dirac(x, amplitude=1.0, center=0.0):
 
     Parameters
     ----------
-    x sequence of floats
+    x :class:`~numpy:numpy.ndarray`
         domain of the function, energy
     amplitude : float
         Integrated intensity of the curve
@@ -57,9 +57,9 @@ class DeltaDiracModel(Model):
 
         Parameters
         ----------
-        y : sequence of floats
+        y : :class:`~numpy:numpy.ndarray`
             Intensities
-        x : sequence of floats
+        x : :class:`~numpy:numpy.ndarray`
             energy values
         kwargs : dict
             additional optional arguments, passed to model function.
