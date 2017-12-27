@@ -1,3 +1,5 @@
+from __future__ import (absolute_import, division, print_function)
+
 import numpy as np
 from scipy.interpolate import interp1d
 from lmfit import Model, models
