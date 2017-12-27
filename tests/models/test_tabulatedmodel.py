@@ -19,7 +19,7 @@ def test_tabulation():
     params = model.guess(x_exp, y_exp, 0.042)
     fit = model.fit(y_exp, params, x=x_exp, fit_kws={'nan_policy': 'omit'})
 
-    print fit.params
+    print (fit.params)
 
 if __name__ == '__main__':
     pytest.main([os.path.abspath(__file__)])
