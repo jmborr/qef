@@ -21,15 +21,15 @@ def strexpft(x, amplitude=1.0, center=0.0, tau=10.0, beta=1.0):
     Normalization and maximum at :math:`E=E_0`:
 
     .. math::
-
         \int_{-\infty}^{\infty} dE S(E) = A
+    .. math::
         max(S) = A \frac{\tau}{\beta} \Gamma(\beta^{-1})
 
-    Uses scipy.fftpack.fft for the Fourier transform
+    Uses :func:`~scipy:scipy.fftpack.fft` for the Fourier transform
 
     Parameters
     ----------
-    x: sequence of floats
+    x: :class:`~numpy:numpy.ndarray`
         domain of the function, energy
     amplitude : float
         Integrated intensity of the curve
@@ -44,7 +44,7 @@ def strexpft(x, amplitude=1.0, center=0.0, tau=10.0, beta=1.0):
 
     Returns
     -------
-    values: sequence of floats
+    values: :class:`~numpy:numpy.ndarray`
         function over the domain
     """  # noqa: E501
     ne = len(x)
@@ -117,16 +117,16 @@ class StretchedExponentialFTModel(Model):
 
         Parameters
         ----------
-        y : sequence of floats
+        y : :class:`~numpy:numpy.ndarray`
             Intensities
-        x : sequence of floats
+        x : :class:`~numpy:numpy.ndarray`
             energy values
         kwargs : dict
             additional optional arguments, passed to model function.
 
         Returns
         -------
-        Parameters
+        :class:`~lmfit.parameter.Parameters`
             parameters with guessed values
         """
         amplitude = 1.0

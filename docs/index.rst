@@ -4,12 +4,12 @@ Welcome to qef's documentation!
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    readme
    installation
    usage
-   modules
+   qef
    contributing
    authors
    history
@@ -20,3 +20,5 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+`Donwload the documentation <https://readthedocs.org/projects/qef/downloads>`_
