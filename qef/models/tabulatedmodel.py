@@ -1,8 +1,5 @@
-import numpy as np
 from scipy.interpolate import interp1d
 from lmfit import Model, models
-from lmfit.lineshapes import lorentzian
-from matplotlib import pyplot as plt
 
 
 class TabulatedModel (Model):
@@ -46,16 +43,15 @@ class TabulatedModel (Model):
     def guess(self, data,x, **kwargs):
         params = self.make_params()
 
-        def pset(param, value):
-            params["%s%s" % (self.prefix, param)].set(value=value)
+        def pset(param, value, min):
+            params["%s%s" % (self.prefix, param)].set(value=value, min=min)
 
         x_at_max = x[models.index_of(data, max(data))]
         ysim = self.eval(x=x_at_max, amplitude=1, center=x_at_max)
         amplitude = max(data) / ysim
-        pset("amplitude", amplitude )
-        pset("center",  x_at_max)
+        pset("amplitude", amplitude, min=0.0)
+        pset("center",  x_at_max, min=-100)
         return models.update_param_vals(params, self.prefix, **kwargs)
-
 
 
 
