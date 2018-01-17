@@ -20,7 +20,8 @@ def test_tabulation():
     params = model.guess(x_exp, y_exp)
     fit = model.fit(y_exp, params, x=x_exp, fit_kws={'nan_policy': 'omit'})
 
-    print (fit.params)
+    assert abs(fit.best_values['amplitude'] - intensity) < 0.0001
+    assert abs(fit.best_values['center'] - peak_center) < 0.0001
 
 if __name__ == '__main__':
     pytest.main([os.path.abspath(__file__)])
