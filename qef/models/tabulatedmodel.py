@@ -1,8 +1,5 @@
-import numpy as np
 from scipy.interpolate import interp1d
 from lmfit import Model, models
-from lmfit.lineshapes import lorentzian
-from matplotlib import pyplot as plt
 
 
 class TabulatedModel (Model):
