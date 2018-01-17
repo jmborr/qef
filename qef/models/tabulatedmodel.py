@@ -50,8 +50,9 @@ class TabulatedModel (Model):
         ysim = self.eval(x=x_at_max, amplitude=1, center=x_at_max)
         amplitude = max(data) / ysim
         pset("amplitude", amplitude, min=0.0)
-        pset("center",  x_at_max, min=-100)
+        pset("center",  x_at_max, min=-1000)
         return models.update_param_vals(params, self.prefix, **kwargs)
+
 
 
 
