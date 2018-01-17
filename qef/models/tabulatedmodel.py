@@ -5,7 +5,6 @@ from lmfit.lineshapes import lorentzian
 from matplotlib import pyplot as plt
 
 
-
 class TabulatedModel (Model):
     """fitting the tabulated Model to some arbitrary points
 
@@ -20,10 +19,10 @@ class TabulatedModel (Model):
         x: :class:`~numpy:numpy.ndarray`
             energy domain where the interpolation required
 
-        amp : float
-            Integrated intensity of the curve
+        amplitude : float
+            peak intensity of the curve
 
-        cen : float
+        center : float
             position of the peak
 
         data: :class:`~numpy:numpy.ndarray`
@@ -36,21 +35,27 @@ class TabulatedModel (Model):
 
         """
 
-
     def __init__(self, xs, ys, *args, **kwargs):
         self._interp = interp1d(xs, ys, fill_value='extrapolate', kind='cubic')
-        def interpolator(x, amp, cen):
-            return amp * self._interp(x - cen)
+
+        def interpolator(x, amplitude, center):
+            return amplitude * self._interp(x - center)
 
         super(TabulatedModel, self).__init__(interpolator, *args, **kwargs)
 
-    def guess(self, x, data, **kwargs):
+    def guess(self, data,x, **kwargs):
         params = self.make_params()
 
-        def pset(param,value):
-            params["%s%s" %(self.prefix, param)].set(value=value)
-        pset("amp", sum(data) * (max(x)-min(x))/len(x))
-        pset("cen", x[models.index_of(data, max(data))])
+        def pset(param, value):
+            params["%s%s" % (self.prefix, param)].set(value=value)
+
+        x_at_max = x[models.index_of(data, max(data))]
+        ysim = self.eval(x=x_at_max, amplitude=1, center=x_at_max)
+        amplitude = max(data) / ysim
+        pset("amplitude", amplitude )
+        pset("center",  x_at_max)
         return models.update_param_vals(params, self.prefix, **kwargs)
+
+
 
 
