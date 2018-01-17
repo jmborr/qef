@@ -13,18 +13,13 @@ class TabulatedModel (Model):
         ys: :class:`~numpy:numpy.ndarray`
             given domain of the function, intensity
 
-        x: :class:`~numpy:numpy.ndarray`
-            energy domain where the interpolation required
-
         amplitude : float
             peak intensity of the curve
 
         center : float
             position of the peak
 
-        data: :class:`~numpy:numpy.ndarray`
-            data to be fitted
-        """
+    """
 
     def __init__(self, xs, ys, *args, **kwargs):
         self._interp = interp1d(xs, ys, fill_value='extrapolate', kind='cubic')
@@ -35,6 +30,26 @@ class TabulatedModel (Model):
         super(TabulatedModel, self).__init__(interpolator, *args, **kwargs)
 
     def guess(self, data, x, **kwargs):
+
+        """Guess starting values for the parameters of a model.
+
+          Parameters
+          ----------
+          data: :class:`~numpy:numpy.ndarray`
+                data to be fitted
+
+          x: :class:`~numpy:numpy.ndarray`
+                energy domain where the interpolation required
+
+          kwargs : dict
+                additional optional arguments, passed to model function.
+
+          Returns
+          -------
+          :class:`~lmfit.parameter.Parameters`
+                parameters with guessed values
+
+        """
         params = self.make_params()
 
         def pset(param, value, min):
@@ -46,7 +61,3 @@ class TabulatedModel (Model):
         pset("amplitude", amplitude, min=0.0)
         pset("center",  x_at_max, min=-1000)
         return models.update_param_vals(params, self.prefix, **kwargs)
-
-
-
-
