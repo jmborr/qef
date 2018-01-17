@@ -20,11 +20,6 @@ def delta_dirac(x, amplitude=1.0, center=0.0):
         Integrated intensity of the curve
     center : float
         position of the peak
-
-    Returns
-    -------
-    values: :class:`~numpy:numpy.ndarray`
-        function values over the domain
     """
     dx = (x[-1] - x[0]) / (len(x) - 1)  # domain spacing
     y = np.zeros(len(x))

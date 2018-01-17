@@ -8,3 +8,4 @@ Models
 
    deltadirac
    strexpft
+   tabulatedmodel

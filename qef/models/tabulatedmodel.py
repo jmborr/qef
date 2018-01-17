@@ -24,12 +24,6 @@ class TabulatedModel (Model):
 
         data: :class:`~numpy:numpy.ndarray`
             data to be fitted
-
-        Returns
-        -------
-        :class:`~lmfit.parameter.Parameters`
-            parameters with guessed values
-
         """
 
     def __init__(self, xs, ys, *args, **kwargs):
@@ -40,7 +34,7 @@ class TabulatedModel (Model):
 
         super(TabulatedModel, self).__init__(interpolator, *args, **kwargs)
 
-    def guess(self, data,x, **kwargs):
+    def guess(self, data, x, **kwargs):
         params = self.make_params()
 
         def pset(param, value, min):
