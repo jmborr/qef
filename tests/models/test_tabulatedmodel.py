@@ -26,11 +26,3 @@ def test_tabulatedmodel():
 
 if __name__ == '__main__':
     pytest.main([os.path.abspath(__file__)])
-
-
-
-
-
-
-
-
