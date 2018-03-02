@@ -1,7 +1,9 @@
 from __future__ import (absolute_import, division, print_function)
 
+from distutils.version import LooseVersion as version
 import numpy as np
 from scipy import constants
+import lmfit
 from lmfit.models import (LorentzianModel, index_of)
 
 planck_constant = constants.Planck / constants.e * 1E15  # meV*psec
@@ -35,21 +37,59 @@ class TeixeiraWaterModel(LorentzianModel):
         - diffusion coefficient ``diff`` :math:`D`
 
     Attributes:
-        - Momentum transfer ``Q``
+        - Momentum transfer ``q``
     """
 
     def hwhm_expr(self):
         """Return constraint expression for hwhm"""
-        fmt = '{hbar}*{prefix:s}diff*{q2}'
-        return fmt.format(hbar=hbar, prefix=self.prefix,
-                          q2=self.Q * self.Q)
+        dq2 = '{prefix:s}diff * {q2}'.format(prefix=self.prefix,
+                                           q2=self.q * self.q)
+        fmt = '{hbar} * dq2/(1 + {prefix:s}tau * dq2})'
+        return fmt.format(hbar=hbar, prefix=self.prefix)
 
     def __init__(self, independent_vars=['x'], prefix='',
-                 missing=None, name=None, Q=0.0, **kwargs):
+                 missing=None, name=None, q=0.0, **kwargs):
         kwargs.update({'prefix': prefix, 'missing': missing,
                        'independent_vars': independent_vars})
         super(TeixeiraWaterModel, self).__init__(**kwargs)
-        self.Q = Q
+        self.q = q
         self.set_param_hint('tau', min=0.0)
         self.set_param_hint('diff', min=0.0)
         self.set_param_hint('sigma', expr=self.hwhm_expr)
+
+    if version(lmfit.__version__) > version('0.9.5'):
+        __init__.__doc__ = lmfit.models.COMMON_INIT_DOC
+
+    def guess(self, y, x=None, **kwargs):
+        r"""Guess starting values for the parameters of a model.
+
+        Parameters
+        ----------
+        y : :class:`~numpy:numpy.ndarray`
+            Intensities
+        x : :class:`~numpy:numpy.ndarray`
+            energy values
+        kwargs : dict
+            additional optional arguments, passed to model function.
+
+        Returns
+        -------
+        :class:`~lmfit.parameter.Parameters`
+            parameters with guessed values
+        """
+        amplitude = 1.0
+        center = 0.0
+        tau = 1.0
+        diff = 1.0
+        if x is not None:
+            # Use guess method from the Lorentzian model
+            p = super(TeixeiraWaterModel, self).guess(self, y, x)
+            amplitude = p['amplitude']
+            center = p['center']
+            # Assume diff*q*q and tau^(-1) same value
+            tau = hbar / (2 * p['sigma'])
+            diff = 1.0 / (self.q * self.q * tau)
+        return self.make_params(amplitude=amplitude,
+                                center=center,
+                                tau=tau,
+                                diff=diff)
