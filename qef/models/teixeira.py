@@ -7,7 +7,7 @@ import lmfit
 from lmfit.models import (LorentzianModel, index_of)
 
 planck_constant = constants.Planck / constants.e * 1E15  # meV*psec
-hbar = planck_constant / np.pi
+hbar = planck_constant / (2 * np.pi)
 
 
 class TeixeiraWaterModel(LorentzianModel):
@@ -44,8 +44,8 @@ class TeixeiraWaterModel(LorentzianModel):
         """Return constraint expression for hwhm"""
         dq2 = '{prefix:s}diff * {q2}'.format(prefix=self.prefix,
                                            q2=self.q * self.q)
-        fmt = '{hbar} * dq2/(1 + {prefix:s}tau * dq2})'
-        return fmt.format(hbar=hbar, prefix=self.prefix)
+        fmt = '{hbar} * {dq2}/(1 + {prefix:s}tau * {dq2})'
+        return fmt.format(hbar=hbar, dq2=dq2, prefix=self.prefix)
 
     def __init__(self, independent_vars=['x'], prefix='',
                  missing=None, name=None, q=0.0, **kwargs):

@@ -18,7 +18,7 @@ def test_tabulatedmodel():
 
     model = TabulatedModel(x_sim, y_sim)
     params = model.guess(x_exp, y_exp)
-    fit = model.fit(y_exp, params, x=x_exp, fit_kws={'nan_policy': 'omit'})
+    fit = model.fit(y_exp, params, x=x_exp)
 
     assert abs(fit.best_values['amplitude'] - intensity) < 0.0001
     assert abs(fit.best_values['center'] - peak_center) < 0.0001
