@@ -1,5 +1,6 @@
 from __future__ import (absolute_import, division, print_function)
 
+import inspect
 from distutils.version import LooseVersion as version
 from functools import partial, update_wrapper
 import numpy as np
@@ -52,7 +53,13 @@ class TeixeiraWaterModel(Model):
         kwargs.update({'prefix': prefix, 'missing': missing, 'name': name,
                        'independent_vars': independent_vars})
         self.q = q
-        txr = update_wrapper(partial(teixeira_water, q=q), teixeira_water)
+        def txr(x, amplitude=1.0, center=1.0, tau=1.0, dcf=1.0):
+            r"""Teixeira intensities with a particular Q-value
+
+            Not implemented as partial(teixeira_water, q=q) because
+            inspect.getargspec does not work with partial objects"""
+            return teixeira_water(x, amplitude=amplitude, center=center,
+                                  tau=tau, dcf=dcf, q=q)
         super(TeixeiraWaterModel, self).__init__(txr, **kwargs)
         [self.set_param_hint(name, min=MIN_POS_DBL) for name in
          ('amplitude', 'tau', 'dcf')]
