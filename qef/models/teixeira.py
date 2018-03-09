@@ -57,7 +57,7 @@ class TeixeiraWaterModel(Model):
             r"""Teixeira intensities with a particular Q-value
 
             Not implemented as partial(teixeira_water, q=q) because
-            inspect.getargspec does not work with partial objects"""
+            inspect.getargspec faults with partial objects in python 2.7"""
             return teixeira_water(x, amplitude=amplitude, center=center,
                                   tau=tau, dcf=dcf, q=q)
         super(TeixeiraWaterModel, self).__init__(txr, **kwargs)
