@@ -6,6 +6,7 @@ from lmfit.model import Model
 
 MIN_POS_DBL = np.nextafter(0, 1)  # minimum positive float
 
+
 def prefix_params(param_expr):
     r"""Prepend parameter names with prefix in parameter expressions
 
@@ -30,4 +31,3 @@ def prefix_params(param_expr):
             p_e = p_e.replace(name, prefixed_name)
         return p_e
     return wrapper
-

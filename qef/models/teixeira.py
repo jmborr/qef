@@ -1,8 +1,6 @@
 from __future__ import (absolute_import, division, print_function)
 
-import inspect
 from distutils.version import LooseVersion as version
-from functools import partial, update_wrapper
 import numpy as np
 import lmfit
 from lmfit.models import (Model, LorentzianModel)
@@ -53,6 +51,7 @@ class TeixeiraWaterModel(Model):
         kwargs.update({'prefix': prefix, 'missing': missing, 'name': name,
                        'independent_vars': independent_vars})
         self.q = q
+
         def txr(x, amplitude=1.0, center=1.0, tau=1.0, dcf=1.0):
             r"""Teixeira intensities with a particular Q-value
 

@@ -3,7 +3,7 @@
 from __future__ import (absolute_import, division, print_function)
 
 import os
-from numpy.testing import assert_almost_equal, assert_allclose
+from numpy.testing import assert_almost_equal
 import pytest
 
 from qef.models.teixeira import TeixeiraWaterModel
@@ -33,7 +33,3 @@ def test_fit(ltz):
 
 if __name__ == '__main__':
     pytest.main([os.path.abspath(__file__)])
-
-
-
-
