@@ -1,23 +1,30 @@
 from __future__ import (absolute_import, division, print_function)
 
 from distutils.version import LooseVersion as version
+from functools import partial, update_wrapper
 import numpy as np
-from scipy import constants
 import lmfit
-from lmfit.models import (LorentzianModel, index_of)
+from lmfit.models import (Model, LorentzianModel)
+from lmfit.lineshapes import lorentzian
 
-planck_constant = constants.Planck / constants.e * 1E15  # meV*psec
-hbar = planck_constant / (2 * np.pi)
+from qef.constants import hbar
+from qef.models.utils import MIN_POS_DBL, prefix_params
 
 
-class TeixeiraWaterModel(LorentzianModel):
+def teixeira_water(x, amplitude=1.0, center=1.0, tau=1.0, dcf=1.0, q=1.0):
+    dq2 = dcf * q * q
+    hwhm = hbar * dq2 / (1 + tau * dq2)
+    return lorentzian(x, amplitude=amplitude, center=center, sigma=hwhm)
+
+
+class TeixeiraWaterModel(Model):
     r"""This fitting function models the dynamic structure factor
     for a particle undergoing jump diffusion.
 
-    J. Teixeira, M.-C. Bellissent-Funel, S. H. Chen, and A. J. Dianoux. `Phys. Rev. A, 31:1913–1917 <http://dx.doi.org/10.1103/PhysRevA.31.1913>`__
+    J. Teixeira, M.-C. Bellissent-Funel, S. H. Chen, and A. J. Dianoux. `Phys. Rev. A, 31:1913-1917 <http://dx.doi.org/10.1103/PhysRevA.31.1913>`__
 
     .. math::
-        S(Q,E) = \frac{A}{\pi} \cdot \frac{1}{\pi} \frac{\Gamma}{\Gamma^2+(E-E_0)^2}
+        S(Q,E) = \frac{A}{\pi} \cdot \frac{\Gamma}{\Gamma^2+(E-E_0)^2}
     .. math::
         \Gamma = \frac{\hbar\cdot D\cdot Q^2}{1+D\cdot Q^2\cdot \tau}
 
@@ -34,31 +41,41 @@ class TeixeiraWaterModel(LorentzianModel):
         - integrated intensity ``amplitude`` :math:`A`
         - position of the peak ``center`` :math:`E_0`
         - residence time ``center`` :math:`\tau`
-        - diffusion coefficient ``diff`` :math:`D`
+        - diffusion coefficient ``dcf`` :math:`D`
 
     Attributes:
         - Momentum transfer ``q``
-    """
+    """  # noqa: E501
 
-    def hwhm_expr(self):
-        """Return constraint expression for hwhm"""
-        dq2 = '{prefix:s}diff * {q2}'.format(prefix=self.prefix,
-                                           q2=self.q * self.q)
-        fmt = '{hbar} * {dq2}/(1 + {prefix:s}tau * {dq2})'
-        return fmt.format(hbar=hbar, dq2=dq2, prefix=self.prefix)
-
-    def __init__(self, independent_vars=['x'], prefix='',
-                 missing=None, name=None, q=0.0, **kwargs):
-        kwargs.update({'prefix': prefix, 'missing': missing,
+    def __init__(self, independent_vars=['x'], q=0.0, prefix='', missing=None,
+                 name=None, **kwargs):
+        kwargs.update({'prefix': prefix, 'missing': missing, 'name': name,
                        'independent_vars': independent_vars})
-        super(TeixeiraWaterModel, self).__init__(**kwargs)
         self.q = q
-        self.set_param_hint('tau', min=0.0)
-        self.set_param_hint('diff', min=0.0)
-        self.set_param_hint('sigma', expr=self.hwhm_expr)
+        txr = update_wrapper(partial(teixeira_water, q=q), teixeira_water)
+        super(TeixeiraWaterModel, self).__init__(txr, **kwargs)
+        [self.set_param_hint(name, min=MIN_POS_DBL) for name in
+         ('amplitude', 'tau', 'dcf')]
+        self.set_param_hint('fwhm', expr=self.fwhm_expr)
+        self.set_param_hint('height', expr=self.height_expr)
 
     if version(lmfit.__version__) > version('0.9.5'):
         __init__.__doc__ = lmfit.models.COMMON_INIT_DOC
+
+    @property
+    @prefix_params
+    def fwhm_expr(self):
+        """Constraint expression for FWHM"""
+        dq2 = 'dcf*{q2}'.format(q2=self.q * self.q)
+        fmt = '2*{hbar}*{dq2}/(1+tau*{dq2})'
+        return fmt.format(hbar=hbar, dq2=dq2)
+
+    @property
+    @prefix_params
+    def height_expr(self):
+        """Constraint expression for maximum peak height."""
+        fmt = "2.0/{pi}*amplitude/fwhm"
+        return fmt.format(pi=np.pi, prefix=self.prefix)
 
     def guess(self, y, x=None, **kwargs):
         r"""Guess starting values for the parameters of a model.
@@ -80,16 +97,15 @@ class TeixeiraWaterModel(LorentzianModel):
         amplitude = 1.0
         center = 0.0
         tau = 1.0
-        diff = 1.0
+        dcf = 1.0
         if x is not None:
             # Use guess method from the Lorentzian model
-            p = super(TeixeiraWaterModel, self).guess(self, y, x)
-            amplitude = p['amplitude']
+            p = LorentzianModel().guess(y, x)
             center = p['center']
             # Assume diff*q*q and tau^(-1) same value
             tau = hbar / (2 * p['sigma'])
-            diff = 1.0 / (self.q * self.q * tau)
+            dcf = 1.0 / (self.q * self.q * tau)
         return self.make_params(amplitude=amplitude,
                                 center=center,
                                 tau=tau,
-                                diff=diff)
+                                dcf=dcf)
