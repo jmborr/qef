@@ -2,3 +2,4 @@ numpy
 scipy
 lmfit
 six
+h5py
