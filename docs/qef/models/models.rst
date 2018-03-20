@@ -7,6 +7,7 @@ Models
    :maxdepth: 1
 
    deltadirac
+   resolution
    strexpft
    tabulatedmodel
    teixeira

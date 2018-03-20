@@ -1,8 +1,10 @@
+from __future__ import (absolute_import, division, print_function)
+
 from scipy.interpolate import interp1d
 from lmfit import Model, models
 
 
-class TabulatedModel (Model):
+class TabulatedModel(Model):
     """fitting the tabulated Model to some arbitrary points
 
         Parameters
@@ -13,12 +15,9 @@ class TabulatedModel (Model):
         ys: :class:`~numpy:numpy.ndarray`
             given domain of the function, intensity
 
-        amplitude : float
-            peak intensity of the curve
-
-        center : float
-            position of the peak
-
+        Fitting parameters:
+            - rescaling factor ``amplitude``
+            - shift along the X-axis ``center``
     """
 
     def __init__(self, xs, ys, *args, **kwargs):
