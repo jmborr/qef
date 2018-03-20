@@ -2,6 +2,7 @@ from __future__ import (absolute_import, division, print_function)
 
 from qef.models.tabulatedmodel import TabulatedModel
 
+
 class TabulatedResolutionModel(TabulatedModel):
     r"""Interpolator of resolution data with no fit parameters
 
