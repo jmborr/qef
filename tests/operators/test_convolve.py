@@ -22,6 +22,9 @@ cases = ((LorentzianModel,
 def test_simplecases(ComponentModel, de, sigma):
     r"""Convolution of two Lorentzians is one Lorentzian, and convolution
      of two gaussians is one gaussian"""
+
+    # Convolve two Lorentzians or convolve two Gaussians. Store the result
+    # in dataset 'y'
     s1 = 0.011  # narrow component
     s2 = 0.163  # broad component
     c1 = ComponentModel(prefix='c1_')
@@ -30,12 +33,21 @@ def test_simplecases(ComponentModel, de, sigma):
     p.update(c2.make_params(amplitude=1.0, center=0.0, sigma=s2))
     e = de * np.arange(-250, 1500)  # energies in meV
     y = Convolve(c1, c2).eval(params=p, x=e)
+
+    # Fit a Lorentzian to dataset 'y' or a Gaussian to dataset 'y'
     m = ComponentModel()
     params = m.guess(y, x=e)
     params['amplitude'].set(value=42.0)  # astray from correct value
     params['sigma'].set(value=4.2*sigma(s1, s2))  # astray from correct value
     r = m.fit(y, params, x=e)
+
+    # The assertions will be carried out using not the dataset 'y' but
+    # the fit we did to the dataset 'y'.
+    # 1. Assert the convolution preserves the normalization
     assert_almost_equal(r.params['amplitude'], 1.0, decimal=3)
+
+    # 1. Assert the convolution results in the appropriate combination for
+    # their components' sigma values
     assert_almost_equal(r.params['sigma'], sigma(s1, s2), decimal=3)
 
 

@@ -1,5 +1,6 @@
 from __future__ import (absolute_import, division, print_function)
 
+import numpy as np
 from scipy.interpolate import interp1d
 from lmfit import Model, models
 
@@ -21,12 +22,19 @@ class TabulatedModel(Model):
     """
 
     def __init__(self, xs, ys, *args, **kwargs):
-        self._interp = interp1d(xs, ys, fill_value='extrapolate', kind='cubic')
+        x = xs.reshape(xs.size)
+        y = ys.reshape(ys.size)
+        y_at_xmin = y[np.argmin(x)]
+        y_at_xmax = y[np.argmax(x)]
+        self._interp = interp1d(x, y, fill_value=(y_at_xmin, y_at_xmax),
+                                bounds_error=False, kind='linear')
 
         def interpolator(x, amplitude, center):
             return amplitude * self._interp(x - center)
 
         super(TabulatedModel, self).__init__(interpolator, *args, **kwargs)
+        self.set_param_hint('amplitude', value=1.0)
+        self.set_param_hint('center', value=0.0)
 
     def guess(self, data, x, **kwargs):
 
