@@ -28,16 +28,17 @@ def test_water(io_fix):
     from lmfit.model import Model
 
     def teixeira(x, diff, tau):
-        r"""Calculate FWHM for a given Q, diffusion coefficient, and relaxation time"""
+        r"""Calculate FWHM for a given Q, diffusion coefficient, and
+        relaxation time"""
         xarr = np.asarray(x)
         dq2 = diff * xarr * xarr
         return 2 * hbar * dq2 / (1 + dq2 * tau)
 
     teixeira_model = Model(teixeira)  # create LMFIT Model instance
     teixeira_model.set_param_hint('diff',
-                                  min=0)  # diffusion coefficient must be positive
+                                  min=0)  # diffusion coeff must be positive
     teixeira_model.set_param_hint('tau',
-                                  min=0)  # relaxation coefficient must be positive
+                                  min=0)  # relaxation coeff must be positive
 
     # Carry out the fit
     teixeira_params = teixeira_model.make_params(diff=0.2,
