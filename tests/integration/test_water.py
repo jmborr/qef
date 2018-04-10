@@ -14,9 +14,7 @@ from lmfit.model import Model
 from qef.constants import hbar  # units of meV x ps  or ueV x ns
 from qef.io.loaders import load_nexus
 from qef.models.deltadirac import DeltaDiracModel
-from qef.models.tabulatedmodel import TabulatedModel
 from qef.models.resolution import TabulatedResolutionModel
-from qef.models.teixeira import TeixeiraWaterModel
 from qef.operators.convolve import Convolve
 
 
@@ -58,7 +56,7 @@ def test_water(io_fix):
         # Putting it all together
         model = intensity * Convolve(resolution,
                                      elastic + inelastic) + background
-        parameters = model.make_params()  # model parameters are a separate entity.
+        parameters = model.make_params()  # model params are a separate entity
 
         # Ties and constraints
         parameters['e_' + sp + 'amplitude'].set(min=0.0, max=1.0)
@@ -103,6 +101,7 @@ def test_water(io_fix):
 
     # Fit HWHM(Q^2) with Teixeira model
     hwhms = 0.5 * np.asarray([fit.params['l_fwhm'].value for fit in fits])
+
     def teixeira(q2s, difcoef, tau):
         dq2 = difcoef * q2s
         return hbar * dq2 / (1 + dq2 * tau)
@@ -117,7 +116,7 @@ def test_water(io_fix):
                          teixeira_fit.best_values['tau']],
                         [0.16, 1.11], decimal=2)
 
-    #Model for Simultaneous Fit of All Spectra with Teixeira Water Model
+    # Model for Simultaneous Fit of All Spectra with Teixeira Water Model
     #
     # create one model for each spectrum, but collect all parameters under
     # a single instance of the Parameters class.
@@ -167,8 +166,6 @@ def test_water(io_fix):
     minimizer = lmfit.Minimizer(residuals, g_params)
     g_fit = minimizer.minimize()
     assert_almost_equal(g_fit.redchi, 0.93, decimal=2)
-
-
 
 
 if __name__ == '__main__':
