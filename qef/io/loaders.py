@@ -72,7 +72,7 @@ def load_nexus_processed(file_name):
         w = data['workspace']
         x = w['axis1'].value  # energy or time values
         y = w['values'].value  # intensities
-        e = w['errors'].value  # indeterminacies in the intensities
+        e = w['errors'].value  # undeterminacies in the intensities
         # Transform to point data
         if len(x) == 1 + len(y[0]):
             x = histogram_to_point_data(x)

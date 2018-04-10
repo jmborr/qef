@@ -32,7 +32,9 @@ class DeltaDiracModel(Model):
     to the center parameter.
 
     At value-closest-to-center, the model evaluates to the amplitude
-    parameter divided by the x-spacing.
+    parameter divided by the x-spacing. This last division is
+    necessary to preserve normalization with integrating the function
+    over the X-axis
 
     Fitting parameters:
         - integrated intensity ``amplitude`` :math:`A`

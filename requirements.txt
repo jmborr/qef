@@ -1,5 +1,6 @@
+h5py
+lmfit
+matplotlib
 numpy
 scipy
-lmfit
 six
-h5py

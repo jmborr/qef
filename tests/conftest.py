@@ -24,4 +24,8 @@ def ltz():
 @pytest.fixture(scope='session')
 def io_fix():
     return dict(irs_res_f=pjn(data_dir, 'io', 'irs26173_graphite_res.nxs'),
-                irs_red_f=pjn(data_dir, 'io', 'irs26176_graphite002_red.nxs'))
+                irs_red_f=pjn(data_dir, 'io', 'irs26176_graphite002_red.nxs'),
+                q_values=(0.525312757876, 0.7291668809127, 0.9233951329944,
+                          1.105593679447, 1.273206832528, 1.42416584459,
+                          1.556455009584, 1.668282739099, 1.758225254224,
+                          1.825094271503))
