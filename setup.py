@@ -28,13 +28,14 @@ test_requirements = [
 
 setup(
     name='qef',
-    version='0.2.0',
+    version='0.2.1',
     description="quasielastic fitting",
     long_description=readme + '\n\n' + history,
     author="Jose Borreguero",
     author_email='borreguero@gmail.com',
     url='https://github.com/jmborr/qef',
-    packages=find_packages(include=['qef']),
+    #packages=find_packages(include=['qef']),
+    packages=find_packages(),
     include_package_data=True,
     install_requires=requirements,
     license="MIT license",
