@@ -2,8 +2,16 @@
 History
 =======
 
-0.2.0 ()
---------
+0.2.2 (2018-04-10)
+------------------
+* Exclude tests directory from release
+
+0.2.1 (2018-04-10)
+------------------
+* Include subdirectories of qef in release
+
+0.2.0 (2018-04-09)
+------------------
 * Notebook for global fitting (PR #40)
 * Load Mantid Nexus data (PR #38)
 * Tabulated resolution model (PR #43)
