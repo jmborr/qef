@@ -17,7 +17,7 @@ def test_tabulatedmodel():
                        sigma=0.042)
 
     model = TabulatedModel(x_sim, y_sim)
-    params = model.guess(x_exp, y_exp)
+    params = model.guess(y_exp, x_exp)
     fit = model.fit(y_exp, params, x=x_exp)
 
     assert abs(fit.best_values['amplitude'] - intensity) < 0.0001
