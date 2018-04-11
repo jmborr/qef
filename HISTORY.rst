@@ -2,6 +2,10 @@
 History
 =======
 
+0.3.0 ()
+--------
+* Docs for data repository (PR #45)
+
 0.2.3 (2018-04-10)
 ------------------
 * Include only qef directory in release
