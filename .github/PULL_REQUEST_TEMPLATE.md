@@ -6,20 +6,13 @@ Description of work.
 
 Fixes #xxxx. <!-- and fix #xxxx or close #xxxx xor resolves #xxxx -->
 
-**Release Notes** 
-<!--
-Either edit the file in docs/source/release/... and it will be in your pull request or state
-*Does not need to be in the release notes.*
--->
-
----
 
 ##### Code Review #####
 
 - [ ] Is the code of an acceptable quality?
 - [ ] Does the code conform to the [coding standards]?
 - [ ] Are the unit tests small and test the class in isolation?
-- [ ] If there are changes in the release notes then do they describe the changes appropriately?
+- [ ] If there are changes in HISTORY.rst then do they describe the changes appropriately?
 
 ##### Functional Tests #####
 
