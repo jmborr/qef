@@ -2,6 +2,10 @@
 History
 =======
 
+0.2.3 (2018-04-10)
+------------------
+* Include only qef directory in release
+
 0.2.2 (2018-04-10)
 ------------------
 * Exclude tests directory from release
