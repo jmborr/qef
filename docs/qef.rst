@@ -8,3 +8,4 @@ Modules
 
    qef/models/models.rst
    qef/operators/operators.rst
+   qef/io/io.rst
