@@ -181,4 +181,3 @@ def load_dave(file_name, to_meV=True):
         e.append(list(ye[1::2]))  # shift one, and then every other item
 
     return dict(q=q, x=x, y=np.asarray(y), e=np.asarray(e))
-
