@@ -20,5 +20,19 @@ def test_load_nexus(io_fix):
     assert data['y'].shape == (1, 200)
 
 
+def test_load_dave(io_fix):
+    data = loaders.load_dave(io_fix['dave'], to_meV=False)
+    #  assert Q values
+    assert (data['q'][0], data['q'][-1]) == (0.3, 1.9)
+    # assert energies
+    assert (data['x'][0], data['x'][-1]) == (-119.8, 119.8)
+    # assert fist spectrum
+    assert (data['y'][0][0], data['y'][0][-1]) == (0.00589672, 0.00789678)
+    assert (data['e'][0][0], data['e'][0][-1]) == (0.000488621, 0.000631035)
+    # assert last spectrum
+    assert (data['y'][-1][0], data['y'][-1][-1]) == (0.0128807, 0.0154997)
+    assert (data['e'][-1][0], data['e'][-1][-1]) == (0.000419397, 0.000421017)
+
+
 if __name__ == '__main__':
     pytest.main([os.path.abspath(__file__)])

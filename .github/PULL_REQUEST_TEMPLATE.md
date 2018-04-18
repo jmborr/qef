@@ -18,6 +18,9 @@ Fixes #xxxx. <!-- and fix #xxxx or close #xxxx xor resolves #xxxx -->
 
 - [ ] Do changes function as described? Add comments below that describe the tests performed?
 - [ ] Do the changes handle unexpected situations, e.g. bad input?
+
+##### Documentation #####
+
 - [ ] Has the relevant (user and developer) documentation been added/updated?
 
 Does everything look good? Mark the review as **Approve**. A member of `@qef/gatekeepers` will take care of it.
