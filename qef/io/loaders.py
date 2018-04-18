@@ -2,6 +2,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import re
 import os
+import numpy as np
 import h5py
 import logging
 
@@ -110,3 +111,70 @@ def load_nexus(file_name):
         else:
             raise IOError('No reader found for this HDF5 file')
     return data
+
+
+def load_dave(file_name):
+    r"""
+
+    Parameters
+    ----------
+    file_name : str
+        Path to file
+
+    Returns
+    -------
+    dict
+        keys are q(momentum transfer), x(energy or time), y(intensities), and
+        errors(e)
+    """
+    comment_symbol = '#'
+    entries = dict(n_e='Number of Energy transfer values',
+                   n_q='Number of q values',
+                   e='Energy transfer (micro eV) values',
+                   q='q (1/Angstroms) values',
+                   g='Group')
+
+    with open(file_name) as f:
+        all = f.read()
+
+    # Check all entries are present in the file
+    for entry in entries.values():
+        if all.find('{} {}'.format(comment_symbol, entry)) < 0:
+            raise IOError('{} not found in {}'.format(entry, file_name))
+
+    # Load number of energies and Q values
+    def load_number_of_items(key):
+        pattern = re.compile(r'(\d+)')
+        # starting position for search
+        start = all.find(entries[key]) + len(entries[key])
+        return int(pattern.search(all[start:]).group(1))
+
+    n_e = load_number_of_items('n_e')  # number of energy values
+    n_q = load_number_of_items('n_q')  # number of Q values
+
+    # Load energies and Q values
+    def load_items(n, key):
+        pattern = re.compile(r'(\-*\d+\.*\d*)')
+        start = all.find(entries[key]) + len(entries[key])
+        matches = pattern.finditer(all[start:])
+        return np.asarray([float(m.group(1)) for m in matches][: n])
+
+    x = load_items(n_e, 'e')  # energy values
+    q = load_items(n_q, 'q')  # Q values
+
+    # Load intensities
+    y = list()
+    e = list()
+    pattern = re.compile(r'(\-*\d+\.*\d*)')
+    for i in range(n_q):
+        entry = entries['g'] + ' {}'.format(i)
+        # starting position to search Group "i"
+        start = all.find(entry) + len(entry)
+        matches = pattern.finditer(all[start:])
+        # ye contains both intensities and errors
+        ye = np.asarray([float(m.group(1)) for m in matches][: 2 * n_e])
+        y.append(list(ye[::2]))  # every other item in the list
+        e.append(list(ye[1::2]))  # shift one, and then every other item
+
+    return dict(q=q, x=x, y=np.asarray(y), e=np.asarray(e))
+

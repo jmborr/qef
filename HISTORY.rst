@@ -4,6 +4,7 @@ History
 
 0.3.0 ()
 --------
+* Load DAVE files (PR #51)
 * Docs for data repository (PR #45)
 
 0.2.3 (2018-04-10)
