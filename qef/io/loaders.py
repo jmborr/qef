@@ -113,13 +113,15 @@ def load_nexus(file_name):
     return data
 
 
-def load_dave(file_name):
+def load_dave(file_name, to_meV=True):
     r"""
 
     Parameters
     ----------
     file_name : str
         Path to file
+    to_meV : bool
+        Convert energies from micro-eV to mili-eV
 
     Returns
     -------
@@ -160,6 +162,8 @@ def load_dave(file_name):
         return np.asarray([float(m.group(1)) for m in matches][: n])
 
     x = load_items(n_e, 'e')  # energy values
+    if to_meV:
+        x *= 1.0E-03  # assumed data is in micro-eV
     q = load_items(n_q, 'q')  # Q values
 
     # Load intensities

@@ -21,7 +21,7 @@ def test_load_nexus(io_fix):
 
 
 def test_load_dave(io_fix):
-    data = loaders.load_dave(io_fix['dave'])
+    data = loaders.load_dave(io_fix['dave'], to_meV=False)
     #  assert Q values
     assert (data['q'][0], data['q'][-1]) == (0.3, 1.9)
     # assert energies
