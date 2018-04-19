@@ -155,6 +155,7 @@ def load_dave(file_name, to_meV=True):
 
     # Load energies and Q values
     fexpr = r'(\-*\d+\.*\d*e*\-*\d*)'  # float entry (also scientific mode)
+
     def load_items(n, key):
         pattern = re.compile(fexpr)
         start = all.find(entries[key]) + len(entries[key])
