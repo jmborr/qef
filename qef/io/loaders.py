@@ -135,7 +135,6 @@ def load_dave(file_name, to_meV=True):
                    e='Energy transfer (micro eV) values',
                    q='q (1/Angstroms) values',
                    g='Group')
-
     with open(file_name) as f:
         all = f.read()
 
@@ -155,8 +154,9 @@ def load_dave(file_name, to_meV=True):
     n_q = load_number_of_items('n_q')  # number of Q values
 
     # Load energies and Q values
+    fexpr = r'(\-*\d+\.*\d*e*\-*\d*)'  # float entry (also scientific mode)
     def load_items(n, key):
-        pattern = re.compile(r'(\-*\d+\.*\d*)')
+        pattern = re.compile(fexpr)
         start = all.find(entries[key]) + len(entries[key])
         matches = pattern.finditer(all[start:])
         return np.asarray([float(m.group(1)) for m in matches][: n])
@@ -169,7 +169,7 @@ def load_dave(file_name, to_meV=True):
     # Load intensities
     y = list()
     e = list()
-    pattern = re.compile(r'(\-*\d+\.*\d*)')
+    pattern = re.compile(fexpr)
     for i in range(n_q):
         entry = entries['g'] + ' {}'.format(i)
         # starting position to search Group "i"
