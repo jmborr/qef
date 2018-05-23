@@ -2,6 +2,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import lmfit
 import traitlets
+import ipywidgets as ipyw
 import numpy as np
 
 class Simple(traitlets.HasTraits):
@@ -12,7 +13,6 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
     r"""Wrapper of lmfit.Parameter allows synchronization with ipywidgets
     """
     param_attr_names = ('_val', 'min', 'max', 'vary', '_expr')
-    widget_trait_names = ('value', 'min', 'max', 'vary', 'expr')
     to_trait_prefix = 't'
     t_val = traitlets.Float(allow_none=True)
     tmin = traitlets.Float()
@@ -21,12 +21,8 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
     t_expr = traitlets.Unicode(allow_none=True)
 
     @classmethod
-    def _to_trait(cls, key, origin='param'):
-        other_key = key
-        if origin == 'widget':
-            # from widget to param
-
-        return cls.to_trait_prefix + other_key
+    def _to_trait(cls, key):
+        return cls.to_trait_prefix + key
 
 
     @classmethod
@@ -45,27 +41,20 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
         return '<ParameterWithTraits {}>'.format(p_repr)
 
     def __setattr__(self, key, value):
+        r"""Setting attributes making sure Parameter attributes and
+        traitlets stay in sync"""
         if key in ParameterWithTraits.param_attr_names:
+            # attribute of Parameter
             lmfit.Parameter.__setattr__(self, key, value)
             other_key = ParameterWithTraits._to_trait(key)
             other_value = getattr(self, other_key)
             if value != other_value:  # prevent cycling
                 traitlets.HasTraits.__setattr__(self, other_key, value)
         else:
+            # attribute of HasTraits
             traitlets.HasTraits.__setattr__(self, key, value)
             other_key = ParameterWithTraits._to_parm(key)
             if other_key in ParameterWithTraits.param_attr_names:
                 other_value = getattr(self, other_key)
-                lmfit.Parameter.__setattr__(self, other_key, value)
-
-    def link(self, widget, name):
-        r"""bidirectional link with an ipywidget
-
-        Parameters
-        ----------
-        w : ipywidget
-            IPython widget containing one traitlet
-        name : string
-            traitlet name
-        """
-        key =
+                if value != other_value:  # prevent cycling
+                    lmfit.Parameter.__setattr__(self, other_key, value)
