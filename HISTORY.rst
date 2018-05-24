@@ -4,6 +4,7 @@ History
 
 0.3.0 ()
 --------
+* Endow lmfit.Parameter instances with traitlets (PR #57)
 * Load DAVE files (PR #51)
 * Docs for data repository (PR #45)
 

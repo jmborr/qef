@@ -23,7 +23,7 @@ install:
         conda install --yes -n testenv flake8;
     fi
   - source activate testenv
-  - pip install codecov lmfit matplotlib h5py sphinx sphinx_rtd_theme
+  - pip install codecov lmfit matplotlib h5py sphinx sphinx_rtd_theme ipywidgets
 
 script:
   - py.test --cov=qef qef tests
