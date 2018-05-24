@@ -2,11 +2,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import lmfit
 import traitlets
-import ipywidgets as ipyw
 import numpy as np
-
-class Simple(traitlets.HasTraits):
-    t_value = traitlets.Float()
 
 
 class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
@@ -23,7 +19,6 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
     @classmethod
     def _to_trait(cls, key):
         return cls.to_trait_prefix + key
-
 
     @classmethod
     def _to_parm(cls, key):

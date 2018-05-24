@@ -31,12 +31,12 @@ class TestParameterWithTraits(object):
         p.set(value=42)
         p = ParameterWithTraits(name='p')
         p.set(value=42)
-        assert p.t_val == 42 and p.vary == True
+        assert p.t_val == 42 and p.vary is True
         p.set(expr='hello')
         assert p.expr == 'hello' and p.t_expr == 'hello'
         assert p.vary is False and p.tvary is False
         p.set(value=42)
-        assert p.t_val == 42 and p.vary == False
+        assert p.t_val == 42 and p.vary is False
         assert p._expr is None and p.t_expr is None
 
 
