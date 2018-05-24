@@ -6,8 +6,8 @@ from __future__ import (absolute_import, division, print_function)
 import os
 import pytest
 import lmfit
-from qef.widgets.parameter import ParameterWithTraits, Simple
-import traitlets
+from qef.widgets.parameter import ParameterWithTraits
+
 
 class TestParameterWithTraits(object):
 
@@ -34,8 +34,8 @@ class TestParameterWithTraits(object):
         assert p.t_val == 42 and p.vary == True
         p.set(expr='hello')
         assert p.expr == 'hello' and p.t_expr == 'hello'
-        assert p.vary == False and p.tvary == False
-        p.set(value = 42)
+        assert p.vary is False and p.tvary is False
+        p.set(value=42)
         assert p.t_val == 42 and p.vary == False
         assert p._expr is None and p.t_expr is None
 
