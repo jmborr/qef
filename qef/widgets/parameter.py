@@ -2,6 +2,7 @@ from __future__ import (absolute_import, division, print_function)
 
 import lmfit
 import traitlets
+import ipywidgets as ipyw
 import numpy as np
 
 
@@ -53,3 +54,74 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
                 other_value = getattr(self, other_key)
                 if value != other_value:  # prevent cycling
                     lmfit.Parameter.__setattr__(self, other_key, value)
+
+
+class ParameterWidget(ipyw.HBox):
+    r"""One possible representation of a fitting parameter"""
+    inf = float('inf')
+
+    def __init__(self):
+        self.value = ipyw.FloatText(description='value:', value=0, allow_none=True)
+        self.nomin = ipyw.Checkbox(description='-inf', value=True)
+        self.min = ipyw.FloatText(description='min:', value=-self.inf)
+        self.nomax = ipyw.Checkbox(description='inf', value=True)
+        self.max = ipyw.FloatText(description='max:', value=self.inf)
+        self.vary = ipyw.Checkbox(description='vary', value=True)
+        self.expr = ipyw.Text(description='constrain:', value='')
+        self.elements = [self.nomin, self.min, self.value,
+                         self.nomax, self.max, self.vary, self.expr]
+        self.initialize_callbacks()
+        self.initialize_layouts()
+        super(ParameterWidget, self).__init__(self.elements)
+
+    def initialize_callbacks(self):
+        r"""Register callbacks to sync elements"""
+        self.nomin.observe(self.nomin_changed, 'value', 'change')
+        self.min.observe(self.min_changed, 'value', 'change')
+        self.nomax.observe(self.nomax_changed, 'value', 'change')
+        self.max.observe(self.max_changed, 'value', 'change')
+        self.value.observe(self.value_changed, 'value', 'change')
+
+    def nomin_changed(self, change):
+        r"""Set min to -infinity if nomin is checked"""
+        if change.new is True:
+            if self.min.value > -self.inf:  # prevent cycles
+                self.min.value = -self.inf
+
+    def min_changed(self, change):
+        r"""1. Uncheck nomin if new value is entered in min
+        2. Update value.value if it becomes smaller than min.value"""
+        if change.new > self.max.value:  # Validate bounds
+            self.min.value = change.old  # reject change
+        else:  # Notify other widgets
+            if change.new > -self.inf:
+                self.nomin.value = False
+            if change.new > self.value.value:
+                self.value.value = change.new
+
+    def nomax_changed(self, change):
+        r"""Set max to infinity if nomax is checked"""
+        if change.new is True:
+            if self.max.value < self.inf:  # prevent cycles
+                self.max.value = self.inf
+
+    def max_changed(self, change):
+        r"""1. Uncheck nomax if new value is entered in max
+        2. Update value.value if it becomes bigger than max.value"""
+        if change.new < self.min.value:  # Validate bounds
+            self.max.value = change.old  # reject change
+        else:  # Notify other widgets
+            if change.new < self.inf:
+                self.nomax.value = False
+            if change.new < self.value.value:
+                self.value.value = change.new
+
+    def value_changed(self, change):
+        r"""Validate value within bounds"""
+        if change.new < self.min.value:
+            self.value.value = self.min.value
+        elif change.new > self.max.value:
+            self.value.value = self.max.value
+
+    def initialize_layouts(self):
+        r"""Prettify the look"""
