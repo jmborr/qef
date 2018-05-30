@@ -7,22 +7,60 @@ import numpy as np
 
 
 class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
-    r"""Wrapper of lmfit.Parameter allows synchronization with ipywidgets
+    r"""Wrapper of :class:`~lmfit.parameter.Parameter` with
+    :class:`~traitlets.TraitType` allows synchronization with ipywidgets
+
+    Same signature for initialization as that of
+    :class:`~lmfit.parameter.Parameter`.
+
+    Parameters
+    ----------
+    name : str, optional
+        Name of the Parameter.
+    value : float, optional
+        Numerical Parameter value.
+    vary : bool, optional
+        Whether the Parameter is varied during a fit (default is True).
+    min : float, optional
+        Lower bound for value (default is `-numpy.inf`, no lower bound).
+    max : float, optional
+        Upper bound for value (default is `numpy.inf`, no upper bound).
+    expr : str, optional
+        Mathematical expression used to constrain the value during the fit.
+    brute_step : float, optional
+        Step size for grid points in the `brute` method.
+    user_data : optional
+        User-definable extra attribute used for a Parameter.
     """
+    #: :class:`~lmfit.parameter.Parameter` attribute  names
     param_attr_names = ('_val', 'min', 'max', 'vary', '_expr')
     to_trait_prefix = 't'
+    #: :class:`~traitlets.Float` trailet wrapping
+    #: :class:`~lmfit.parameter.Parameter` attribute `value`
     t_val = traitlets.Float(allow_none=True)
+    #: :class:`~traitlets.Float` trailet wrapping
+    #: :class:`~lmfit.parameter.Parameter` attribute `_val`
     tmin = traitlets.Float()
+    #: :class:`~traitlets.Float` trailet wrapping
+    #: :class:`~lmfit.parameter.Parameter` attribute `min`
     tmax = traitlets.Float()
+    #: :class:`~traitlets.Bool` trailet wrapping
+    #: :class:`~lmfit.parameter.Parameter` attribute `vary`
     tvary = traitlets.Bool()
+    #: :class:`~traitlets.Unicode` trailet wrapping
+    #: :class:`~lmfit.parameter.Parameter` attribute `expr`
     t_expr = traitlets.Unicode(allow_none=True)
 
     @classmethod
     def _to_trait(cls, key):
+        r"""From :class:`~lmfit.parameter.Parameter` attribute name to
+        :class:`~traitlets.TraitType` name"""
         return cls.to_trait_prefix + key
 
     @classmethod
     def _to_parm(cls, key):
+        r"""From :class:`~traitlets.TraitType` name to
+        :class:`~lmfit.parameter.Parameter` attribute name"""
         return key.replace(ParameterWithTraits.to_trait_prefix, '')
 
     def __init__(self, name=None, value=None, vary=True, min=-np.inf,
@@ -37,8 +75,8 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
         return '<ParameterWithTraits {}>'.format(p_repr)
 
     def __setattr__(self, key, value):
-        r"""Setting attributes making sure Parameter attributes and
-        traitlets stay in sync"""
+        r"""Setting attributes making sure :class:`~lmfit.parameter.Parameter`
+        attributes and :class:`~traitlets.TraitType` stay in sync"""
         if key in ParameterWithTraits.param_attr_names:
             # attribute of Parameter
             lmfit.Parameter.__setattr__(self, key, value)
@@ -57,7 +95,13 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
 
 
 class ParameterWidget(ipyw.Box):
-    r"""One possible representation of a fitting parameter"""
+    r"""One possible representation of a fitting parameter
+
+    Parameters
+    ----------
+    show_header : Bool
+        Hide or show names of the widget components 'min', 'value',...
+    """
     inf = float('inf')
 
     def __init__(self, show_header=True):
@@ -112,7 +156,7 @@ class ParameterWidget(ipyw.Box):
                                                   layout=box_ly)
 
     def initialize_callbacks(self):
-        r"""Register callbacks to sync elements"""
+        r"""Register callbacks to sync component widgets"""
         self.nomin.observe(self.nomin_changed, 'value', 'change')
         self.min.observe(self.min_changed, 'value', 'change')
         self.nomax.observe(self.nomax_changed, 'value', 'change')
@@ -128,7 +172,10 @@ class ParameterWidget(ipyw.Box):
                 self.min.value = -self.inf
 
     def min_changed(self, change):
-        r"""1. Uncheck nomin if new value is entered in min
+        r"""Notify other widgets if min changes.
+
+        0. Reject change if min becomes bigger than max
+        1. Uncheck nomin if new value is entered in min
         2. Update value.value if it becomes smaller than min.value"""
         if change.new > self.max.value:  # Validate bounds
             self.min.value = change.old  # reject change
@@ -145,7 +192,10 @@ class ParameterWidget(ipyw.Box):
                 self.max.value = self.inf
 
     def max_changed(self, change):
-        r"""1. Uncheck nomax if new value is entered in max
+        r"""Notify other widgets if min changes.
+
+        0. Reject change if max becomes smaller than min
+        1. Uncheck nomax if new value is entered in max
         2. Update value.value if it becomes bigger than max.value"""
         if change.new < self.min.value:  # Validate bounds
             self.max.value = change.old  # reject change
@@ -156,18 +206,19 @@ class ParameterWidget(ipyw.Box):
                 self.value.value = change.new
 
     def value_changed(self, change):
-        r"""Validate value within bounds"""
+        r"""Validate value is within bounds. Otherwise set value as the
+        closest bound value"""
         if change.new < self.min.value:
             self.value.value = self.min.value
         elif change.new > self.max.value:
             self.value.value = self.max.value
 
     def vary_changed(self, change):
-        r"""enable/disable boundaries and value"""
+        r"""enable/disable eidtin of boundaries, value, and expression"""
         for w in (self.nomin, self.min, self.value, self.nomax, self.max,
                   self.expr):
             w.disabled = not change.new
 
     def expr_changed(self, change):
-        r"""vary/no-vary boundaries and values"""
+        r"""enable/disable boundaries and values"""
         self.vary.value = True if change.new == '' else False
