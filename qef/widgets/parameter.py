@@ -100,7 +100,7 @@ class ParameterWidget(ipyw.Box):
     Parameters
     ----------
     show_header : Bool
-        Hide or show names of the widget components 'min', 'value',...
+        Hide or show names of the widget components `min`, `value`,...
     """
     inf = float('inf')
 
