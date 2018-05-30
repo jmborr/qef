@@ -289,10 +289,12 @@ texinfo_documents = [
 
 # Domains for intersphinx inventory file objects.inv
 intersphinx_mapping = {
-    "python": ('https://docs.python.org/{}'.format(sys.version_info[0]), None),
-    "numpy": ('http://docs.scipy.org/doc/numpy', None),
+    'ipywidgets': ('http://ipywidgets.readthedocs.io/en/stable', None),
+    'lmfit': ('https://lmfit.github.io/lmfit-py', None),
+    'numpy': ('http://docs.scipy.org/doc/numpy', None),
+    'python': ('https://docs.python.org/{}'.format(sys.version_info[0]), None),
     'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
-    "lmfit": ('https://lmfit.github.io/lmfit-py', None)
+    'traitlets': ('http://traitlets.readthedocs.io/en/stable', None)
 }
 
 # Suppress certain warnings
