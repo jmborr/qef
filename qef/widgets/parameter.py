@@ -111,14 +111,14 @@ class ParameterCallbacksMixin(object):
         1. Uncheck :code:`nomin` if new value is entered in :code:`min`
         2. Update :code:`value.value` if it becomes smaller than
            :code:`min.value`"""
-        if 'max' in self.facade and change.new > self.facade['max'].value:
-            self.facade['min'].value = change.old  # reject change
+        f = self.facade
+        if 'max' in f and change.new > f['max'].value:
+            f['min'].value = change.old  # reject change
         else:  # Notify other widgets
-            if 'nomin' in self.facade and change.new > -self.inf:
-                self.facade['nomin'].value = False
-            if 'value' in self.facade and \
-                change.new > self.facade['value'].value:
-                    self.facade['value'].value = change.new
+            if 'nomin' in f and change.new > -self.inf:
+                f['nomin'].value = False
+            if 'value' in f and change.new > f['value'].value:
+                    f['value'].value = change.new
 
     def nomax_value_change(self, change):
         r"""Set :code:`max` to :math:`\infty` if :code:`nomax` is checked"""
@@ -133,14 +133,14 @@ class ParameterCallbacksMixin(object):
         1. Uncheck :code:`nomax` if new value is entered in :code:`max`
         2. Update :code:`value.value` if it becomes bigger than
         :code:`max.value`"""
-        if 'min' in self.facade and change.new < self.facade['min'].value:
-            self.facade['max'].value = change.old  # reject change
+        f = self.facade
+        if 'min' in f and change.new < f['min'].value:
+            f['max'].value = change.old  # reject change
         else:  # Notify other widgets
-            if 'nomax' in self.facade and change.new < self.inf:
-                self.facade['nomax'].value = False
-            if 'value' in self.facade and \
-                change.new < self.facade['value'].value:
-                    self.facade['value'].value = change.new
+            if 'nomax' in f and change.new < self.inf:
+                f['nomax'].value = False
+            if 'value' in f and change.new < f['value'].value:
+                    f['value'].value = change.new
 
     def value_value_change(self, change):
         r"""Validate :code:`value` is within bounds. Otherwise set
