@@ -15,7 +15,7 @@ class TestParameterWidget(object):
     def test_init(self):
         p = pqef.ParameterWidget()
         assert p.nomin.value is True
-        assert p.min.value == -p.inf
+        assert p.min.value == -float('inf')
 
 
 def test_create_facade(widgets_fix):
