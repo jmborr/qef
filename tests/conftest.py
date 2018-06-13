@@ -32,6 +32,7 @@ def io_fix():
                           1.825094271503),
                 dave=pjn(data_dir, 'io', 'dave_file.grp'))
 
+
 @pytest.fixture(scope='session')
 def widgets_fix():
     class CustomParm(ipyw.HBox):

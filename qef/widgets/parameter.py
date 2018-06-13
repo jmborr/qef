@@ -75,8 +75,8 @@ class ParameterCallbacksMixin(object):
     The methods in this Mixin expects attribute :code:`facade`,
     a dictionary whose keys coincide with tuple
     :const:`~qef.widgets.parameter.ParameterCallbacksMixin.widget_names`
-    and whose values are either :code:`None` or references to ipywidgets. Attribute
-    :code:`facade` can be created with
+    and whose values are either :code:`None` or references to ipywidgets.
+    Attribute :code:`facade` can be created with
     function :func:`~qef.widgets.parameter.add_widget_facade`."""
 
     #: Representation of infinity value
@@ -118,7 +118,7 @@ class ParameterCallbacksMixin(object):
                 self.facade['nomin'].value = False
             if 'value' in self.facade and \
                 change.new > self.facade['value'].value:
-                self.facade['value'].value = change.new
+                    self.facade['value'].value = change.new
 
     def nomax_value_change(self, change):
         r"""Set :code:`max` to :math:`\infty` if :code:`nomax` is checked"""
@@ -140,7 +140,7 @@ class ParameterCallbacksMixin(object):
                 self.facade['nomax'].value = False
             if 'value' in self.facade and \
                 change.new < self.facade['value'].value:
-                self.facade['value'].value = change.new
+                    self.facade['value'].value = change.new
 
     def value_value_change(self, change):
         r"""Validate :code:`value` is within bounds. Otherwise set
@@ -323,7 +323,7 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
         :class:`~traitlets.TraitType` name"""
         try:
             return cls.trait_names[cls.param_features.index(feature)]
-        except:
+        except KeyError:
             msg = '{} is not a parameter feature'.format(feature)
             log_qef.error(msg)
             raise KeyError(msg)
@@ -334,7 +334,7 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
         :class:`~traitlets.TraitType` name"""
         try:
             return cls.trait_names[cls.param_attrs.index(attr)]
-        except:
+        except KeyError:
             msg = '{} is not a parameter feature'.format(attr)
             log_qef.error(msg)
             raise KeyError(msg)
@@ -345,7 +345,7 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
         :class:`~lmfit.parameter.Parameter` attribute name"""
         try:
             return cls.param_attrs[cls.trait_names.index(name)]
-        except:
+        except KeyError:
             msg = '{} is not a valid trait'.format(name)
             log_qef.error(msg)
             raise KeyError(msg)
@@ -408,5 +408,5 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
         for pn, w in widget.facade.items():
             tname = self.feature_to_trait(pn)
             if w not in [l.target[0] for l in self._widget_links]:
-                l = traitlets.link((self, tname), (w, 'value'))
-                self._widget_links.add(l)
+                lnk = traitlets.link((self, tname), (w, 'value'))
+                self._widget_links.add(lnk)

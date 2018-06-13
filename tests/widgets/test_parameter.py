@@ -61,25 +61,30 @@ class TestParameterCallbacksMixin(object):
         p.facade['min'].value = -1.0
         assert p.facade['nomin'].value is False  # nomin notified of min change
         p.facade['nomin'].value = True
-        assert p.facade['min'].value == -p.inf  # min was notified of nomin change
+        # test min was notified of nomin change
+        assert p.facade['min'].value == -p.inf
 
         p.facade['value'].value = 0.5
         p.facade['min'].value = 0.0
         assert p.facade['value'].value == 0.5  # value not updated
         p.facade['min'].value = 1.0
-        assert p.facade['value'].value == p.facade['min'].value  # value was notified of min change
+        # test value was notified of min change
+        assert p.facade['value'].value == p.facade['min'].value
 
         p.facade['max'].value = 10.0
-        assert p.facade['nomax'].value is False  # nomax was notified of max change
+        # test nomax was notified of max change
+        assert p.facade['nomax'].value is False
         p.facade['nomax'].value = True
-        assert p.facade['max'].value == p.inf  # max was notified of nomax change
+        # test max was notified of nomax change
+        assert p.facade['max'].value == p.inf
 
         p.facade['min'].value = -1.0
         p.facade['value'].value = 0.0
         p.facade['max'].value = 1.0
         assert p.facade['value'].value == 0.0  # value not updated
         p.facade['max'].value = -0.5
-        assert p.facade['value'].value == p.facade['max'].value  # value was notified of max change
+        # test value was notified of max change
+        assert p.facade['value'].value == p.facade['max'].value
 
         p.facade['min'].value = -1.0
         p.facade['value'].value = 0.0
@@ -89,12 +94,13 @@ class TestParameterCallbacksMixin(object):
         p.facade['max'].value = p.facade['min'].value - 1.0
         assert p.facade['max'].value == 1.0  # max value rejected
 
+        # test value within bounds
         p.facade['min'].value = -1.0
         p.facade['value'].value = -2.0
-        assert p.facade['value'].value == p.facade['min'].value  # value within bounds
+        assert p.facade['value'].value == p.facade['min'].value
         p.facade['max'].value = 1.0
         p.facade['value'].value = 2.0
-        assert p.facade['value'].value == p.facade['max'].value  # value within bounds
+        assert p.facade['value'].value == p.facade['max'].value
 
 
 class TestParameterWithTraits(object):
