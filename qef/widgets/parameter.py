@@ -23,7 +23,7 @@ class ParameterWidget(ipyw.Box):
 
         # minimum block
         self.nomin = ipyw.Checkbox(value=True, layout=el_ly(125))
-        self.min = ipyw.FloatText(value=-self.inf, layout=el_ly(165))
+        self.min = ipyw.FloatText(value=-float('inf'), layout=el_ly(165))
         box_ly = dict(border='1px solid black', display='flex', margin='0px',
                       flex_flow='row', width='290px')
         self.minbox = ipyw.Box([self.nomin, self.min], layout=box_ly)
@@ -33,7 +33,7 @@ class ParameterWidget(ipyw.Box):
 
         # maximum block
         self.nomax = ipyw.Checkbox(value=True, layout=el_ly(125))
-        self.max = ipyw.FloatText(value=self.inf, layout=el_ly(165))
+        self.max = ipyw.FloatText(value=float('inf'), layout=el_ly(165))
         self.maxbox = ipyw.Box([self.nomax, self.max], layout=box_ly)
 
         # constraints block
