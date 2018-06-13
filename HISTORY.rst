@@ -4,6 +4,7 @@ History
 
 0.3.0 ()
 --------
+* Subscription manager of ipywidgets to a ParameterWithTraits (PR #60)
 * ipywidget to represent a parameter (PR #59)
 * Endow lmfit.Parameter instances with traitlets (PR #57)
 * Load DAVE files (PR #51)
