@@ -1,22 +1,21 @@
 from __future__ import (absolute_import, division, print_function)
 
-from collections import namedtuple
 import lmfit
 import traitlets
 import ipywidgets as ipyw
 import weakref
-
 from qef.io import log_qef
 
 
 class ParameterWidget(ipyw.Box):
-    r"""One possible representation of a fitting parameter
+    r"""One possible representation of a fitting parameter.
+    Inherits from `ipywidgets.widgets.widget_box.Box <https://github.com/jupyter-widgets/ipywidgets/blob/v7.0.0a1/ipywidgets/widgets/widget_box.py#L18>`_
 
     Parameters
     ----------
     show_header : Bool
         Hide or show names of the widget components `min`, `value`,...
-    """
+    """  # noqa: E501
 
     def __init__(self, show_header=True):
         def el_ly(w):
@@ -73,16 +72,20 @@ class ParameterCallbacksMixin(object):
     r"""Implement relationships between the different components of an
     ipywidget exposing all or some of the parameter attributes
 
-    The methods in this Mixin expects attribute `facade`, a dictionary whose
-    keys coincide with tuple `widget_names` and whose values are either None
-    or references to ipython widgets"""
+    The methods in this Mixin expects attribute :code:`facade`,
+    a dictionary whose keys coincide with tuple
+    :const:`~qef.widgets.parameter.ParameterCallbacksMixin.widget_names`
+    and whose values are either :code:`None` or references to ipywidgets. Attribute
+    :code:`facade` can be created with
+    function :func:`~qef.widgets.parameter.add_widget_facade`."""
 
+    #: Representation of infinity value
     inf = float('inf')
     widget_names = ('nomin', 'min', 'value', 'nomax', 'max', 'vary', 'expr')
 
     def validate_facade(self):
-        r"""Ascertain that keys of facade attribute are contained in the
-        set of widget names"""
+        r"""Ascertain that keys of :code:`facade` attribute are contained in
+        :const:`~qef.widgets.parameter.ParameterCallbacksMixin.widget_names`"""
         fs = set(self.facade.keys())
         assert set(ParameterCallbacksMixin.widget_names).issuperset(fs)
 
@@ -96,17 +99,18 @@ class ParameterCallbacksMixin(object):
                 widget.observe(callback, 'value', 'change')
 
     def nomin_value_change(self, change):
-        r"""Set min to -infinity if nomin is checked"""
+        r"""Set :code:`min` to :math:`-\infty` if :code:`nomin` is checked"""
         if 'min' in self.facade and change.new is True:
             if self.facade['min'].value > -self.inf:  # prevent cycles
                 self.facade['min'].value = -self.inf
 
     def min_value_change(self, change):
-        r"""Notify other widgets if min changes.
+        r"""Notify other widgets if :code:`min` changes.
 
-        0. Reject change if min becomes bigger than max
-        1. Uncheck nomin if new value is entered in min
-        2. Update value.value if it becomes smaller than min.value"""
+        0. Reject change if :code:`min` becomes bigger than :code:`max`
+        1. Uncheck :code:`nomin` if new value is entered in :code:`min`
+        2. Update :code:`value.value` if it becomes smaller than
+           :code:`min.value`"""
         if 'max' in self.facade and change.new > self.facade['max'].value:
             self.facade['min'].value = change.old  # reject change
         else:  # Notify other widgets
@@ -117,17 +121,18 @@ class ParameterCallbacksMixin(object):
                 self.facade['value'].value = change.new
 
     def nomax_value_change(self, change):
-        r"""Set max to infinity if nomax is checked"""
+        r"""Set :code:`max` to :math:`\infty` if :code:`nomax` is checked"""
         if 'max' in self.facade and change.new is True:
             if self.facade['max'].value < self.inf:  # prevent cycles
                 self.facade['max'].value = self.inf
 
     def max_value_change(self, change):
-        r"""Notify other widgets if min changes.
+        r"""Notify other widgets if :code:`min` changes.
 
-        0. Reject change if max becomes smaller than min
-        1. Uncheck nomax if new value is entered in max
-        2. Update value.value if it becomes bigger than max.value"""
+        0. Reject change if :code:`max` becomes smaller than :code:`min`
+        1. Uncheck :code:`nomax` if new value is entered in :code:`max`
+        2. Update :code:`value.value` if it becomes bigger than
+        :code:`max.value`"""
         if 'min' in self.facade and change.new < self.facade['min'].value:
             self.facade['max'].value = change.old  # reject change
         else:  # Notify other widgets
@@ -138,40 +143,43 @@ class ParameterCallbacksMixin(object):
                 self.facade['value'].value = change.new
 
     def value_value_change(self, change):
-        r"""Validate value is within bounds. Otherwise set value as the
-        closest bound value"""
+        r"""Validate :code:`value` is within bounds. Otherwise set
+        :code:`value` as the closest bound value"""
         if 'min' in self.facade and change.new < self.facade['min'].value:
             self.facade['value'].value = self.facade['min'].value
         elif 'max' in self.facade and change.new > self.facade['max'].value:
             self.facade['value'].value = self.facade['max'].value
 
     def vary_value_change(self, change):
-        r"""enable/disable editing of boundaries, value, and expression"""
+        r"""enable/disable editing of :code:`min`, :code:`max`, :code:`value`,
+        and :code:`expr`"""
         for name in ('nomin', 'min', 'value', 'nomax', 'max', 'expr'):
             if name in self.facade:
                 self.facade['name'].disabled = not change.new
 
     def expr_value_change(self, change):
-        r"""enable/disable boundaries and values"""
+        r"""enable/disable :code:`min`, :code:`max`, and :code:`value`"""
         if 'vary' in self.facade:
             self.facade['vary'].value = True if change.new == '' else False
 
 
 def create_facade(widget, mapping=None):
-    r"""Create facade dictionary where keys are standard widget names
-    (ParameterCallbacksMixin.widget_names) and whose values are simple
-    ipywidgets that control the fitting parameter attributes denoted by
-    the standard widget names
+    r"""Create :code:`facade` dictionary where keys are standard
+    :const:`~qef.widgets.parameter.ParameterCallbacksMixin.widget_names`
+    and whose values are simple ipywidgets that control the fitting
+    parameter attributes denoted by the standard
+    :const:`~qef.widgets.parameter.ParameterCallbacksMixin.widget_names`.
+
 
     Parameters
     ----------
-    widget: ipywidget
+    widget: `ipywidgets.widgets.widget.Widget <https://github.com/jupyter-widgets/ipywidgets/blob/v7.0.0a1/ipywidgets/widgets/widget.py#L238>`_
     mapping : str, dict, or None
         if `str`, mapping denotes the widget name to be associated with
         the widget. If `dict`, then `mapping` values are attribute names
         of `widget`, referencing the simple ipywidgets to be associated
         to standard  widget names. The widget names are the keys of `mapping`.
-        If `None`, an inspection of `widget` attributes will be performed,
+        If :code:`None`, an inspection of `widget` attributes will be performed,
         looking for names that coincide with standard widget names. If the
         inspection is unsuccessful, the widget will be associated with the
         standard widget name 'value' to represent the values taken by the
@@ -180,7 +188,7 @@ def create_facade(widget, mapping=None):
     Returns
     -------
     facade : dict
-    """
+    """  # noqa: E501
     names = ParameterCallbacksMixin.widget_names  # expected widget names
     if mapping is not None:
         if isinstance(mapping, str) and mapping in names:
@@ -190,6 +198,7 @@ def create_facade(widget, mapping=None):
             k = set(mapping.keys())
             if k & set(names) != k:
                 msg = 'mapping contains invalid widget names'
+                log_qef.error(msg)
                 raise KeyError(msg)
             facade = {name: widget.__dict__[wn]
                       for name, wn in mapping.items()}
@@ -202,21 +211,22 @@ def create_facade(widget, mapping=None):
 
 
 def add_widget_facade(widget, mapping=None):
-    r"""Create facade dictionary where keys are standard widget names
-    (ParameterCallbacksMixin.widget_names) and whose values are simple
-    ipywidgets that control the fitting parameter attributes denoted by
-    the standard widget names. This dictionary is added to the input
-    widget as an attribute.
+    r"""Create :code:`facade` dictionary where keys are standard
+    :const:`~qef.widgets.parameter.ParameterCallbacksMixin.widget_names`
+    and whose values are simple ipywidgets that control the fitting
+    parameter attributes denoted by the standard
+    :const:`~qef.widgets.parameter.ParameterCallbacksMixin.widget_names`.
+    This dictionary is added to the input widget as an attribute.
 
     Parameters
     ----------
-    widget: ipywidget
+    widget: `ipywidgets.widgets.widget.Widget <https://github.com/jupyter-widgets/ipywidgets/blob/v7.0.0a1/ipywidgets/widgets/widget.py#L238>`_
     mapping : str, dict, or None
         if `str`, mapping denotes the widget name to be associated with
         the widget. If `dict`, then `mapping` values are attribute names
         of `widget`, referencing the simple ipywidgets to be associated
         to standard  widget names. The widget names are the keys of `mapping`.
-        If `None`, an inspection of `widget` attributes will be performed,
+        If :code:`None`, an inspection of `widget` attributes will be performed,
         looking for names that coincide with standard widget names. If the
         inspection is unsuccessful, the widget will be associated with the
         standard widget name 'value' to represent the values taken by the
@@ -224,30 +234,34 @@ def add_widget_facade(widget, mapping=None):
 
     Returns
     -------
-    widget : ipywidget
-        returns input widget
-    """
+    widget : :class:`~ipywidgets:ipywidgets.widgets.widget.Widget`
+        Reference to input widget
+    """  # noqa: E501
     widget.facade = create_facade(widget, mapping=mapping)
     return widget
 
 
 def add_widget_callbacks(widget, mapping=None):
-    r"""Extend the widget's type with ParameterCallbacksMixin
+    r"""Extend the widget's type with
+    :class:`~qef.widgets.parameter.ParameterCallbacksMixin`
 
     Parameters
     ----------
-    widget: ipywidget
+    widget: `ipywidgets.widgets.widget.Widget <https://github.com/jupyter-widgets/ipywidgets/blob/v7.0.0a1/ipywidgets/widgets/widget.py#L238>`_
     mapping : str, dict, or None
-        if `str`, mapping denotes the widget name to be associated with
-        the widget. If `dict`, then `mapping` values are attribute names
+        if `str`, :code:`mapping` denotes the widget name to be associated with
+        the widget. If `dict`, then :code:`mapping` values are attribute names
         of `widget`, referencing the simple ipywidgets to be associated
-        to standard  widget names. The widget names are the keys of `mapping`.
-        If `None`, an inspection of `widget` attributes will be performed,
-        looking for names that coincide with standard widget names. If the
-        inspection is unsuccessful, the widget will be associated with the
-        standard widget name 'value' to represent the values taken by the
-        fitting parameter.
-    """
+        to standard
+        :const:`~qef.widgets.parameter.ParameterCallbacksMixin.widget_names`.
+        The widget names are the keys of :code:`mapping`.
+        If :code:`None`, an inspection of `widget` attributes will be
+        performed, looking for names that coincide with standard
+        :const:`~qef.widgets.parameter.ParameterCallbacksMixin.widget_names`.
+        If the inspection is unsuccessful, the widget will be associated
+        with the standard widget name 'value' to represent the values taken
+        by the fitting parameter.
+    """  # noqa: E501
     base_class = widget.__class__
     widget.__class__ = type(base_class.__name__,
                             (base_class, ParameterCallbacksMixin), {})
@@ -282,22 +296,25 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
     """
     #: :class:`~lmfit.parameter.Parameter` attribute  names
     param_attrs = ('_val', 'min', 'max', 'vary', '_expr')
+    #: :class:`~lmfit.parameter.Parameter` feature  names
     param_features = ('value', 'min', 'max', 'vary', 'expr')
+    #: :class:`~traitlets.TraitType` instances in sync with
+    #: :class:`~lmfit.parameter.Parameter` attributes
     trait_names = ('tvalue', 'tmin', 'tmax', 'tvary', 'texpr')
-    #: :class:# `~traitlets.Float` trailet wrapping
-    #: :class:`~lmfit.parameter.Parameter` attribute `value`
+    #: :class:`~traitlets.Float` trailet wrapping
+    #: :class:`~lmfit.parameter.Parameter` attribute :code:`value`
     tvalue = traitlets.Float(allow_none=True)
     #: :class:`~traitlets.Float` trailet wrapping
-    #: :class:`~lmfit.parameter.Parameter` attribute `_val`
+    #: :class:`~lmfit.parameter.Parameter` attribute :code:`_val`
     tmin = traitlets.Float()
     #: :class:`~traitlets.Float` trailet wrapping
-    #: :class:`~lmfit.parameter.Parameter` attribute `min`
+    #: :class:`~lmfit.parameter.Parameter` attribute :code:`min`
     tmax = traitlets.Float()
     #: :class:`~traitlets.Bool` trailet wrapping
-    #: :class:`~lmfit.parameter.Parameter` attribute `vary`
+    #: :class:`~lmfit.parameter.Parameter` attribute :code:`vary`
     tvary = traitlets.Bool()
     #: :class:`~traitlets.Unicode` trailet wrapping
-    #: :class:`~lmfit.parameter.Parameter` attribute `expr`
+    #: :class:`~lmfit.parameter.Parameter` attribute :code:`_expr`
     texpr = traitlets.Unicode(allow_none=True)
 
     @classmethod
@@ -307,7 +324,9 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
         try:
             return cls.trait_names[cls.param_features.index(feature)]
         except:
-            raise KeyError('{} is not a parameter feature'.format(feature))
+            msg = '{} is not a parameter feature'.format(feature)
+            log_qef.error(msg)
+            raise KeyError(msg)
 
     @classmethod
     def attr_to_trait(cls, attr):
@@ -316,7 +335,9 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
         try:
             return cls.trait_names[cls.param_attrs.index(attr)]
         except:
-            raise KeyError('{} is not a parameter feature'.format(attr))
+            msg = '{} is not a parameter feature'.format(attr)
+            log_qef.error(msg)
+            raise KeyError(msg)
 
     @classmethod
     def trait_to_attr(cls, name):
@@ -325,7 +346,9 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
         try:
             return cls.param_attrs[cls.trait_names.index(name)]
         except:
-            raise KeyError('{} is not a valid trait'.format(name))
+            msg = '{} is not a valid trait'.format(name)
+            log_qef.error(msg)
+            raise KeyError(msg)
 
     def __init__(self, name=None, value=None, vary=True, min=-float('inf'),
                  max=float('inf'), expr=None, brute_step=None, user_data=None):
@@ -359,22 +382,27 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
                     lmfit.Parameter.__setattr__(self, other_key, value)
 
     def link_widget(self, widget, mapping=None):
-        r"""
+        r"""Link the value of a single ipywidget to one trait, or the values
+        of the element widgets of a composite ipywidget to different traits.
+        The specific traits can be specified with the :code:`mapping` argument.
 
         Parameters
         ----------
-        widget: ipywidget
+        widget: `ipywidgets.widgets.widget.Widget <https://github.com/jupyter-widgets/ipywidgets/blob/v7.0.0a1/ipywidgets/widgets/widget.py#L238>`_
         mapping : str, dict, or None
-            if `str`, mapping denotes the widget name to be associated with
-            the widget. If `dict`, then `mapping` values are attribute names
-            of `widget`, referencing the simple ipywidgets to be associated
-            to standard  widget names. The widget names are the keys of `mapping`.
-            If `None`, an inspection of `widget` attributes will be performed,
-            looking for names that coincide with standard widget names. If the
-            inspection is unsuccessful, the widget will be associated with the
-            standard widget name 'value' to represent the values taken by the
-            fitting parameter.
-        """
+            if `str`, :code:`mapping` denotes the widget name to be associated
+            with the widget. If `dict`, then :code:`mapping` values are
+            attribute names of `widget`, referencing the simple ipywidgets to
+            be associated to standard
+            :const:`~qef.widgets.parameter.ParameterCallbacksMixin.widget_names`.
+            The widget names are the keys of :code:`mapping`. If :code:`None`,
+            an inspection of `widget` attributes will be performed,
+            looking for names that coincide with standard
+            :const:`~qef.widgets.parameter.ParameterCallbacksMixin.widget_names`.
+            If the inspection is unsuccessful, the widget will be associated
+            with the standard widget name 'value' to represent the values
+            taken by the fitting parameter.
+        """  # noqa: E501
         add_widget_facade(widget, mapping=mapping)
         add_widget_callbacks(widget, mapping=mapping)
         for pn, w in widget.facade.items():
