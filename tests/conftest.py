@@ -5,6 +5,7 @@ from os.path import join as pjn
 import sys
 import pytest
 import numpy as np
+import ipywidgets as ipyw
 from lmfit.lineshapes import lorentzian
 
 # Resolve the path to the "external data"
@@ -30,3 +31,22 @@ def io_fix():
                           1.556455009584, 1.668282739099, 1.758225254224,
                           1.825094271503),
                 dave=pjn(data_dir, 'io', 'dave_file.grp'))
+
+
+@pytest.fixture(scope='session')
+def widgets_fix():
+    class CustomParm(ipyw.HBox):
+        def __init__(self):
+            self.ninf = ipyw.Checkbox(value=True)
+            self.left = ipyw.FloatText(value=-float('inf'))
+            self.val = ipyw.FloatText(value=0)
+            self.pinf = ipyw.Checkbox(value=True)
+            self.right = ipyw.FloatText(value=float('inf'))
+            self.notfix = ipyw.Checkbox(value=True)
+            self.constr = ipyw.Text(value='')
+            elements = [self.ninf, self.left, self.val, self.pinf, self.right,
+                        self.notfix, self.constr]
+            super(CustomParm, self).__init__(elements)
+    mapping = dict(nomin='ninf', min='left', nomax='pinf', max='right',
+                   value='val', vary='notfix', expr='constr')
+    return {'CustomParm': CustomParm, 'mapping': mapping}
