@@ -155,12 +155,17 @@ class ParameterCallbacksMixin(object):
         and :code:`expr`"""
         for name in ('nomin', 'min', 'value', 'nomax', 'max', 'expr'):
             if name in self.facade:
-                self.facade['name'].disabled = not change.new
+                self.facade[name].disabled = not change.new
 
     def expr_value_change(self, change):
         r"""enable/disable :code:`min`, :code:`max`, and :code:`value`"""
+        if change.new == '':
+            change.owner.value = None  # lmfit Parameter requires
         if 'vary' in self.facade:
-            self.facade['vary'].value = True if change.new == '' else False
+            if change.new in ['', None]:
+                self.facade['vary'].value = True
+            else:
+                self.facade['vary'].value = False
 
 
 def create_facade(widget, mapping=None):
@@ -301,6 +306,7 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
     #: :class:`~traitlets.TraitType` instances in sync with
     #: :class:`~lmfit.parameter.Parameter` attributes
     trait_names = ('tvalue', 'tmin', 'tmax', 'tvary', 'texpr')
+    trait_allow_none = ('tvalue', 'texpr')
     #: :class:`~traitlets.Float` trailet wrapping
     #: :class:`~lmfit.parameter.Parameter` attribute :code:`value`
     tvalue = traitlets.Float(allow_none=True)
@@ -321,34 +327,26 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
     def feature_to_trait(cls, feature):
         r"""From :class:`~lmfit.parameter.Parameter` feature name to
         :class:`~traitlets.TraitType` name"""
-        try:
+        if feature in cls.param_features:
             return cls.trait_names[cls.param_features.index(feature)]
-        except KeyError:
-            msg = '{} is not a parameter feature'.format(feature)
-            log_qef.error(msg)
-            raise KeyError(msg)
+        return None
+
 
     @classmethod
     def attr_to_trait(cls, attr):
         r"""From :class:`~lmfit.parameter.Parameter` attribute name to
         :class:`~traitlets.TraitType` name"""
-        try:
+        if attr in cls.param_attrs:
             return cls.trait_names[cls.param_attrs.index(attr)]
-        except KeyError:
-            msg = '{} is not a parameter feature'.format(attr)
-            log_qef.error(msg)
-            raise KeyError(msg)
+        return None
 
     @classmethod
     def trait_to_attr(cls, name):
         r"""From :class:`~traitlets.TraitType` name to
         :class:`~lmfit.parameter.Parameter` attribute name"""
-        try:
+        if name in cls.trait_names:
             return cls.param_attrs[cls.trait_names.index(name)]
-        except KeyError:
-            msg = '{} is not a valid trait'.format(name)
-            log_qef.error(msg)
-            raise KeyError(msg)
+        return None
 
     def __init__(self, name=None, value=None, vary=True, min=-float('inf'),
                  max=float('inf'), expr=None, brute_step=None, user_data=None):
@@ -407,6 +405,10 @@ class ParameterWithTraits(lmfit.Parameter, traitlets.HasTraits):
         add_widget_callbacks(widget, mapping=mapping)
         for pn, w in widget.facade.items():
             tname = self.feature_to_trait(pn)
-            if w not in [l.target[0] for l in self._widget_links]:
+            if tname and w not in [l.target[0] for l in self._widget_links]:
+                if tname in self.trait_allow_none:
+                    w.traits()['value'].allow_none = True
+                if tname == 'texpr' and w.value == '':
+                    w.value = None  # lmfit.Parameter requires
                 lnk = traitlets.link((self, tname), (w, 'value'))
                 self._widget_links.add(lnk)
